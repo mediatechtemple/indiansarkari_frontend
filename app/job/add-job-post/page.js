@@ -3,29 +3,37 @@ import React, { useState } from "react";
 import CommonForm from "@/components/common-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { jobPostFormControlls } from "@/config";
-import { initialJobFormData } from "@/utils";
+import { initialJobFormData, postData } from "@/utils";
 import { RiCloseLine } from "@remixicon/react";
 import { useRouter } from "next/navigation";
+import Loading from "@/app/loading";
 
 const AddJobPost = () => {
   const [jobFormData, setJobFormData] = useState(initialJobFormData);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleJobFormSubmit = (event) => {
+  const handleJobFormSubmit = async (event) => {
     event.preventDefault();
-    console.log("Job Form Data:", jobFormData);
+    setLoading(true);
+    delete jobFormData.state_id;
+    delete jobFormData.subcategory_id;
+    delete jobFormData.department_id;
+    const data = await postData(`/job`, jobFormData);
+    if (data) {
+      setJobFormData(initialJobFormData);
+      router.back("/job/job-post");
+    } else {
+      setLoading(false);
+    }
   };
 
   const checkIfFormIsValid = () => {
-    return (
-      jobFormData.jobTitle &&
-      jobFormData.jobDate &&
-      jobFormData.shortDescription
-      // jobFormData.category &&
-      // jobFormData.department
-    );
+    return jobFormData.title;
   };
-
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Card className="min-w-full shadow-lg">
@@ -46,7 +54,7 @@ const AddJobPost = () => {
             buttonText="Create"
             formData={jobFormData}
             setFormData={setJobFormData}
-            // isButtonDisabled={!checkIfFormIsValid()}
+            isButtonDisabled={!checkIfFormIsValid()}
             handleSubmit={handleJobFormSubmit}
           />
         </CardContent>

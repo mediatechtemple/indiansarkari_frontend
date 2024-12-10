@@ -14,6 +14,7 @@ export default function CommonLayout({ children }) {
       <div className="fixed top-[78px] left-0 w-[18%] h-[calc(100vh-90px)] z-40 overflow-y-auto sidebar">
         <Sidebar />
       </div>
+      
       <div className="flex flex-grow pt-[90px]">
         {/* Sidebar with top fixed */}
 
@@ -22,9 +23,12 @@ export default function CommonLayout({ children }) {
           {children}
         </main>
       </div>
+
+
       <div className="mt-auto">
         <Footer />
       </div>
+
     </div>
   );
 }

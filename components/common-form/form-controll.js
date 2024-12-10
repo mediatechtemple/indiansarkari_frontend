@@ -17,22 +17,39 @@ import { useRef } from "react";
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const FormControll = ({ formControls = [], formData, setFormData }) => {
-  const editor = useRef(null);
+  // const editor = useRef(null);
   const renderComponentByType = (controlItem) => {
     const currentControlItemValue = formData[controlItem.name];
+
     // Fetch options from API dynamically
     const loadOptions = async (inputValue) => {
       if (!inputValue) return [];
       try {
         const response = await fetch(
-          `${controlItem.apiEndpoint}?query=${inputValue}`
+          `${controlItem.apiEndpoint}?query=${encodeURIComponent(inputValue)}`
         );
+
+        if (!response.ok) {
+          console.error(
+            "Error response from server:",
+            response.status,
+            response.statusText
+          );
+          return [];
+        }
+
         const data = await response.json();
 
-        return data.rows.map((item) => ({
-          value: item.id,
-          label: item.name, // Use 'name' instead of 'label'
-        }));
+        return (
+          data.rows
+            ?.filter((item) =>
+              item.name.toLowerCase().includes(inputValue.toLowerCase())
+            )
+            .map((item) => ({
+              value: item.id,
+              label: item.name,
+            })) || []
+        );
       } catch (error) {
         console.error("Error fetching options:", error);
         return [];
@@ -46,23 +63,9 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
             id={`${controlItem.name}-multi-select`} // Unique ID
             instanceId={`${controlItem.name}-multi-select-instance`} // Unique instance
             isMulti
-            // cacheOptions
-
+            cacheOptions
+            defaultOptions={false}
             loadOptions={loadOptions}
-            // value={
-            //   Array.isArray(currentControlItemValue)
-            //     ? currentControlItemValue.map((id) => {
-            //         // Find the selected label based on the value
-            //         const selectedOption = formData[controlItem.name]?.find(
-            //           (opt) => opt.value === id
-            //         );
-            //         return {
-            //           value: id,
-            //           label: selectedOption ? selectedOption.label : "", // Display label if exists
-            //         };
-            //       })
-            //     : []
-            // } // Ensure value is always an array
             onChange={(selectedOptions) =>
               setFormData({
                 ...formData,
@@ -75,7 +78,7 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
       case "jodit-editor":
         return (
           <JoditEditor
-            ref={editor}
+            // ref={editor}
             value={formData[controlItem.name]}
             onChange={(newContent) =>
               setFormData({
@@ -87,11 +90,11 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
         );
       case "input":
         return (
-          <Input
+          <input
             id={controlItem.name}
             name={controlItem.name}
             placeholder={controlItem.placeholder}
-            className="border border-secondary rounded-lg"
+            className="mt-1 block outline-none w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
             type={controlItem.type}
             value={currentControlItemValue || ""}
             onChange={(event) =>

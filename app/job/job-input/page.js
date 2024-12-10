@@ -20,7 +20,7 @@ import {
 } from "@/config";
 import SearchBar from "@/components/search";
 import JobinputCommonTable from "@/components/job/jobInputTable";
-import { deleteData, getData, postData } from "@/utils";
+import { deleteData, getData, postData, putData } from "@/utils";
 
 const formConfigs = {
   category: { controls: categoryFormControls, endpoint: "/category" },
@@ -58,6 +58,15 @@ const JobInput = () => {
       console.error("Failed to fetch data:", error);
     }
   };
+
+  const onEdit = (item) => {
+    setFormData(item);
+    setDialogOpen(true);
+  };
+  const Remove = () => {
+    setFormData({});
+    setDialogOpen(false);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -70,28 +79,65 @@ const JobInput = () => {
 
     setLoading(true); // Start loading
     try {
-      const result = await postData(endpoint, formData);
-      const newItem = result;
-      switch (formType) {
-        case "category":
-          setCategoryData((prev) => [...prev, newItem]);
-          break;
-        case "subcategory":
-          setSubCategoryData((prev) => [...prev, newItem]);
-          break;
-        case "department":
-          setDepartmentData((prev) => [...prev, newItem]);
-          break;
-        case "state":
-          setStateData((prev) => [...prev, newItem]);
-          break;
-        default:
-          break;
+      if (formData.id) {
+        const result = await putData(`${endpoint}/${formData.id}`, formData);
+        const updatedItem = result;
+        switch (formType) {
+          case "category":
+            setCategoryData((prev) =>
+              prev.map((item) =>
+                item.id === updatedItem.id ? updatedItem : item
+              )
+            );
+            break;
+          case "subcategory":
+            setSubCategoryData((prev) =>
+              prev.map((item) =>
+                item.id === updatedItem.id ? updatedItem : item
+              )
+            );
+            break;
+          case "department":
+            setDepartmentData((prev) =>
+              prev.map((item) =>
+                item.id === updatedItem.id ? updatedItem : item
+              )
+            );
+            break;
+          case "state":
+            setStateData((prev) =>
+              prev.map((item) =>
+                item.id === updatedItem.id ? updatedItem : item
+              )
+            );
+            break;
+          default:
+            break;
+        }
+      } else {
+        const result = await postData(endpoint, formData);
+        const newItem = result;
+        switch (formType) {
+          case "category":
+            setCategoryData((prev) => [...prev, newItem]);
+            break;
+          case "subcategory":
+            setSubCategoryData((prev) => [...prev, newItem]);
+            break;
+          case "department":
+            setDepartmentData((prev) => [...prev, newItem]);
+            break;
+          case "state":
+            setStateData((prev) => [...prev, newItem]);
+            break;
+          default:
+            break;
+        }
       }
       setDialogOpen(false); // Close dialog
       setFormData({}); // Reset form data
     } catch (error) {
-      console.log(first)(`Failed to create ${formType}: ${error.message}`);
+      console.log(`Failed to create ${formType}: ${error.message}`);
     } finally {
       setLoading(false); // Stop loading
     }
@@ -100,9 +146,8 @@ const JobInput = () => {
   const handleDelete = async (id, type) => {
     try {
       const { endpoint } = formConfigs[type];
-      console.log(endpoint);
+
       await deleteData(`${endpoint}/${id}`);
-      console.log(`${type} with ID ${id} deleted successfully.`);
 
       switch (type) {
         case "category":
@@ -131,7 +176,7 @@ const JobInput = () => {
         Job Input
       </h1>
       <SearchBar placeholder="Search Across Job Input......." />
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-2 gap-4 mt-2">
         {Object.keys(formConfigs).map((type) => (
           <button
             key={type}
@@ -146,52 +191,55 @@ const JobInput = () => {
         ))}
       </div>
 
-      <div className="space-y-8 mt-8">
+      <div className="space-y-8 mt-4">
         <section>
-          <h2 className="text-xl text-blue-600 font-semibold mb-4">
+          <h2 className="text-xl text-blue-600 font-semibold mb-2">
             Category List
           </h2>
           <JobinputCommonTable
             data={categoryData}
             headers={categoryHeaderControlls}
-            //onEdit={(item) => console.log("Edit", item)}
+            onEdit={onEdit}
             onDelete={(id) => handleDelete(id, "category")}
           />
         </section>
         <section>
-          <h2 className="text-xl text-blue-600 font-semibold mb-4">
+          <h2 className="text-xl text-blue-600 font-semibold mb-2">
             SubCategory List
           </h2>
           <JobinputCommonTable
             data={subCategoryData}
             headers={subCategoryHeaderControlls}
+            onEdit={onEdit}
             onDelete={(id) => handleDelete(id, "subcategory")}
           />
         </section>
         <section>
-          <h2 className="text-xl text-blue-600 font-semibold mb-4">
+          <h2 className="text-xl text-blue-600 font-semibold mb-2">
             Department List
           </h2>
           <JobinputCommonTable
             data={departmentData}
             headers={departmentHeaderControlls}
+            onEdit={onEdit}
             onDelete={(id) => handleDelete(id, "department")}
           />
         </section>
         <section>
-          <h2 className="text-xl text-blue-600 font-semibold mb-4">
+          <h2 className="text-xl text-blue-600 font-semibold mb-2">
             State List
           </h2>
           <JobinputCommonTable
             data={stateData}
             headers={stateHeaderControlls}
+            onEdit={onEdit}
             onDelete={(id) => handleDelete(id, "state")}
           />
         </section>
       </div>
 
       {/* Dialog for Form */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={Remove}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create {formType}</DialogTitle>

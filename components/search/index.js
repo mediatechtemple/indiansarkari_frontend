@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Input } from "../ui/input";
 import { RiSearchLine } from "@remixicon/react";
+import { placeholder } from "jodit/esm/plugins/placeholder/placeholder";
 const debounce = (fn, delay) => {
   let timeOutID;
   return (...args) => {
@@ -12,19 +13,27 @@ const debounce = (fn, delay) => {
   };
 };
 const SearchBar = ({ onSearch, placeholder }) => {
-  //   const [searchValue, setSearchValue] = useState("");
-  //   const handelInputChange = (e) => {
-  //     const value = e.target.value;
-  //     setSearchValue(value);
-  //     debounceSearch(value);
-  //   };
-  //   const debounceSearch = debounce((value) => {
-  //     onSearch(value);
-  //   }, 300);
+  const [searchValue, setSearchValue] = useState("");
+
+  const debounceSearch = useCallback(
+    debounce((value) => {
+      onSearch(value);
+    }, 300),
+    [onSearch]
+  );
+
+  const handelInputChange = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    debounceSearch(value); // Use the stable debounce function
+  };
+
   return (
-    <div className="flex justify-center my-3">
+    <div className="flex  my-3">
       <div className="relative flex items-center w-full max-w-[300px]">
         <input
+          onChange={handelInputChange}
+          value={searchValue}
           type="text"
           placeholder={placeholder}
           className="w-96 py-2 px-6 placeholder:text-gray-500 font-medium text-gray-800 border border-gray-300 rounded-full bg-white shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"

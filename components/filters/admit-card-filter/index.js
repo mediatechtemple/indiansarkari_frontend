@@ -3,20 +3,17 @@ import React, { useEffect, useState } from "react";
 import SearchFilter from "../search-filter";
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "../date-filter";
-import { RangeFilter } from "../range-filter";
 import { Label } from "@/components/ui/label";
+
 const defalutInitialValue = {
   location: "",
   category: "",
   department: "",
   content: "",
   publishDate: "",
-  salary: null,
-  age: null,
-  exprience: null,
 };
 
-const JobFilters = ({
+const AdmitCardFilters = ({
   onApplyFilter,
   locations = [],
   categories = [],
@@ -28,14 +25,14 @@ const JobFilters = ({
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [categorySuggestions, setCategorySuggestions] = useState([]);
   const [departmentSuggestions, setDepartmentSuggestions] = useState([]);
-
   const [contentSuggestions, setContentSuggestions] = useState([]);
 
   const [resetDate, setResetDate] = useState(false);
-  const [resetRange, setResetRange] = useState(false);
+
   const handleInputChange = (key, value) => {
     setFilters({ ...filters, [key]: value });
   };
+
   const handleSearch = (key, value) => {
     if (key === "location") {
       setLocationSuggestions(
@@ -71,7 +68,6 @@ const JobFilters = ({
 
   const clearFilters = () => {
     setResetDate(true);
-    setResetRange(true);
     setFilters(defalutInitialValue);
     setLocationSuggestions([]);
     setCategorySuggestions([]);
@@ -82,8 +78,7 @@ const JobFilters = ({
 
   useEffect(() => {
     if (resetDate) setResetDate(false);
-    if (resetRange) setResetRange(false);
-  }, [resetDate, resetRange]);
+  }, [resetDate]);
 
   return (
     <>
@@ -112,17 +107,8 @@ const JobFilters = ({
           clearSuggestions={() => setDepartmentSuggestions([])}
           clear={filters.department === ""}
         />
-        <SearchFilter
-          placeholder="Passed Education..."
-          value={filters.content}
-          suggestions={contentSuggestions}
-          onSearch={(value) => handleSearch("content", value)}
-          clearSuggestions={() => setContentSuggestions([])}
-          clear={filters.content === ""}
-        />
         <SearchFilter placeholder="Admit Card..." />
-        <SearchFilter placeholder="Answer Key..." />
-        <SearchFilter placeholder="Result..." />
+
         <div className="flex flex-col border border-gray-200 hover:border-secondary rounded-xl">
           <Label className=" text-gray-700 mb-2 text-center">
             {dateLabel} Publish Date of Job Posting
@@ -134,43 +120,15 @@ const JobFilters = ({
             resetDate={resetDate}
           />
         </div>
-
-        <div className="border-2 p-1 border-gray-200 hover:border-secondary rounded-xl">
-          <RangeFilter
-            min={10000}
-            max={100000}
-            label="Salary"
-            onChange={(value) => {
-              //console.log("Salary range selected:", value);
-              setFilters({ ...filters, salary: value[0] });
-            }}
-            resetRange={resetRange}
-          />
-        </div>
-
-        <div className="border-2 p-1 border-gray-200 hover:border-secondary rounded-xl">
-          <RangeFilter
-            min={15}
-            max={40}
-            label="Age"
-            onChange={(value) => {
-              //console.log("Age range selected:", value);
-              setFilters({ ...filters, age: value[0] });
-            }}
-            resetRange={resetRange}
-          />
-        </div>
-
-        <div className=" border-2 p-1 border-gray-200 hover:border-secondary rounded-xl">
-          <RangeFilter
-            min={0}
-            max={10}
-            label="Exprience"
-            onChange={(value) => {
-              //console.log("Age range selected:", value);
-              setFilters({ ...filters, exprience: value[0] });
-            }}
-            resetRange={resetRange}
+        <div className="flex flex-col border border-gray-200 hover:border-secondary rounded-xl">
+          <Label className=" text-gray-700 mb-2 text-center">
+            {dateLabel} Publish Date of Admit Card
+          </Label>
+          <DatePickerWithRange
+            onDateRangeChange={(selectedRange) =>
+              handleInputChange("publishDate", selectedRange)
+            }
+            resetDate={resetDate}
           />
         </div>
       </div>
@@ -192,4 +150,4 @@ const JobFilters = ({
   );
 };
 
-export default JobFilters;
+export default AdmitCardFilters;

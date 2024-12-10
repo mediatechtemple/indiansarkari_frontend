@@ -1,10 +1,10 @@
 // Array of job management menu items
 export const jobManagementItems = [
   { label: "Job Posting", path: "/job/job-post" },
-  { label: "Get Admit Card", path: "/admit-card" },
-  { label: "Get Answer Key", path: "/answer-key" },
-  { label: "Get Result", path: "/result" },
-  { label: "Get Syllabus", path: "/syllabus" },
+  { label: "Get Admit Card", path: "/job/admit-card" },
+  { label: "Get Answer Key", path: "/job/answer-key" },
+  { label: "Get Result", path: "/job/result" },
+
   { label: "Job Input", path: "/job/job-input" },
 ];
 
@@ -28,18 +28,18 @@ export const websiteManagementsItems = [
 ];
 
 export const initialJobFormData = {
-  jobTitle: "",
-  jobDate: "",
-  shortDescription: "",
+  title: "",
+  created_at: "",
+  description: "",
   content: "",
   slug: "",
-  metaTags: "",
-  metaDescriptions: "",
-  canonical: "",
-  state: [],
-  category: [],
-  subCategory: [],
-  department: [],
+  meta_title: "",
+  meta_description: "",
+  canonical_url: "",
+  state_id: [],
+  category_id: [],
+  subcategory_id: [],
+  department_id: [],
 };
 
 // utils/index.js
@@ -113,7 +113,10 @@ export const postData = async (endpoint, data) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to submit: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to submit: ${response.status} ${response.statusText}, Details: ${errorText}`
+      );
     }
 
     return await response.json();
@@ -121,29 +124,4 @@ export const postData = async (endpoint, data) => {
     console.error("API Error:", error);
     throw error;
   }
-};
-
-// Example API functions
-export const fetchCategories = (searchTerm = "") => {
-  return fetch(`${apiurl}/category?search=${searchTerm}`).then((res) =>
-    res.json()
-  );
-};
-
-export const fetchSubCategories = (searchTerm = "") => {
-  return fetch(`${apiurl}/subcategory?search=${searchTerm}`).then((res) =>
-    res.json()
-  );
-};
-
-export const fetchStates = (searchTerm = "") => {
-  return fetch(`${apiurl}/state?search=${searchTerm}`).then((res) =>
-    res.json()
-  );
-};
-
-export const fetchDepartments = (searchTerm = "") => {
-  return fetch(`${apiurl}/departments?search=${searchTerm}`).then((res) =>
-    res.json()
-  );
 };
