@@ -3,13 +3,16 @@ import { admitCardHeaderControlls } from "@/config";
 import { getData } from "@/utils";
 
 const AdmiCard = async () => {
-  //const admitCardData = await getData("/jobupdate/get/admit-cards");
+  const admitCardData = await getData("/jobupdate/get/admit-cards");
   return (
     <div className="h-screen w-full">
       <h1 className="text-3xl font-semibold text-center text-blueish font-montserrat">
         Admit Card
       </h1>
-      <AdmitCardTable data={[]} headers={admitCardHeaderControlls} />
+      <AdmitCardTable
+        admitCardData={admitCardData?.rows || []}
+        headers={admitCardHeaderControlls}
+      />
     </div>
   );
 };

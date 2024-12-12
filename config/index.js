@@ -51,25 +51,25 @@ export const jobPostFormControlls = [
   {
     label: "Category",
     name: "category_id",
-    componentType: "multi-select",
+    componentType: "select",
     apiEndpoint: `${apiurl}/category`, // Replace with your API endpoint
   },
   {
     label: "Sub Category",
     name: "subcategory_id",
-    componentType: "multi-select",
+    componentType: "select",
     apiEndpoint: `${apiurl}/subcategory`,
   },
   {
     label: "State",
     name: "state_id",
-    componentType: "multi-select",
+    componentType: "select",
     apiEndpoint: `${apiurl}/state`,
   },
   {
     label: "Department",
     name: "department_id",
-    componentType: "multi-select",
+    componentType: "select",
     apiEndpoint: `${apiurl}/depertment`,
   },
 ];
@@ -82,10 +82,10 @@ export const subCategoryFormControls = [
     componentType: "input",
   },
   {
-    label: "Slug",
-    name: "slug",
-    type: "text",
-    componentType: "input",
+    label: "Category",
+    name: "category_id",
+    componentType: "select",
+    apiEndpoint: `${apiurl}/category`, // Replace with your API endpoint
   },
 ];
 
@@ -93,12 +93,6 @@ export const categoryFormControls = [
   {
     label: "Category Name",
     name: "name",
-    type: "text",
-    componentType: "input",
-  },
-  {
-    label: "Slug",
-    name: "slug",
     type: "text",
     componentType: "input",
   },
@@ -111,12 +105,6 @@ export const departmentFormControls = [
     type: "text",
     componentType: "input",
   },
-  {
-    label: "Slug",
-    name: "slug",
-    type: "text",
-    componentType: "input",
-  },
 ];
 
 export const stateFormControls = [
@@ -126,40 +114,26 @@ export const stateFormControls = [
     type: "text",
     componentType: "input",
   },
-  {
-    label: "Slug",
-    name: "slug",
-    type: "text",
-    componentType: "input",
-  },
 ];
 
 export const categoryHeaderControlls = [
   "Category ID",
   "Category Name",
-  "Slug",
   "Actions",
 ];
 
 export const subCategoryHeaderControlls = [
   "SubCategory ID",
   "SubCategory Name",
-  "Slug",
   "Actions",
 ];
 
 export const departmentHeaderControlls = [
   "Category ID",
   "Category Name",
-  "Slug",
   "Actions",
 ];
-export const stateHeaderControlls = [
-  "State ID",
-  "State Name",
-  "Slug",
-  "Actions",
-];
+export const stateHeaderControlls = ["State ID", "State Name", "Actions"];
 
 export const jobPostHeaderControlls = [
   "Job ID",
@@ -186,6 +160,7 @@ export const admitCardHeaderControlls = [
   "Title",
   "Date of  JobPosting",
   "Description",
+  "Content",
   "Date of AdmiCard",
   "Admit Card",
   "SEO",
@@ -201,6 +176,7 @@ export const answerKeyHeaderControlls = [
   "Title",
   "Date of JobPosting",
   "Description",
+  "Content",
   "Date of AnswerKey",
   "Answer Key",
   "SEO",
@@ -216,6 +192,7 @@ export const resultHeaderControlls = [
   "Title",
   "Date of JobPosting",
   "Description",
+  "Content",
   "Date of Result",
   "Result",
   "SEO",

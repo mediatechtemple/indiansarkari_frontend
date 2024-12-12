@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
+import { apiurl } from "@/utils";
 
 const ModalForm = ({ showModal, setShowModal, jobId }) => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ const ModalForm = ({ showModal, setShowModal, jobId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("first");
     try {
       const apiResponse = await fetch(`${apiurl}/jobupdate`, {
         method: "POST",
@@ -38,6 +40,10 @@ const ModalForm = ({ showModal, setShowModal, jobId }) => {
 
   const handleBackgroundClick = () => {
     setShowModal(false);
+    setFormData({
+      update_type: "",
+      job_id: "",
+    });
   };
 
   const handleModalClick = (e) => {

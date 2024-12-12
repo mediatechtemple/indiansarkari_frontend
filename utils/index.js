@@ -36,10 +36,10 @@ export const initialJobFormData = {
   meta_title: "",
   meta_description: "",
   canonical_url: "",
-  state_id: [],
-  category_id: [],
-  subcategory_id: [],
-  department_id: [],
+  state_id: "",
+  category_id: "",
+  subcategory_id: "",
+  department_id: "",
 };
 
 // utils/index.js

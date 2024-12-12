@@ -36,6 +36,7 @@ const JobFilters = ({
   const handleInputChange = (key, value) => {
     setFilters({ ...filters, [key]: value });
   };
+
   const handleSearch = (key, value) => {
     if (key === "location") {
       setLocationSuggestions(

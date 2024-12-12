@@ -3,13 +3,16 @@ import { resultHeaderControlls } from "@/config";
 import { getData } from "@/utils";
 
 const Result = async () => {
-  //const admitCardData = await getData("/jobupdate/get/admit-cards");
+  const resultData = await getData("/jobupdate/get/results");
   return (
     <div className="h-screen w-full">
       <h1 className="text-3xl font-semibold text-center text-blueish font-montserrat">
         Result
       </h1>
-      <ResultTable resultData={[]} headers={resultHeaderControlls} />
+      <ResultTable
+        resultData={resultData || []}
+        headers={resultHeaderControlls}
+      />
     </div>
   );
 };

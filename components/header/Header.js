@@ -23,7 +23,7 @@ const Header = () => {
         {/* Right Side Header */}
         <div className="flex w-4/5 justify-between items-center px-5">
           <h3 className="text-2xl font-semibold text-white font-poppins">
-            INDIA SARAKRI NAUKRI
+            INDIA SARKARI NAUKRI
           </h3>
 
           <div className="relative flex items-center">

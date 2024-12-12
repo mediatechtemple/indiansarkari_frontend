@@ -35,9 +35,7 @@ const JobinputCommonTable = ({ data = [], headers = [], onEdit, onDelete }) => {
                   <TableCell className="border border-gray-300 px-4 py-0.5 text-center">
                     {item.name}
                   </TableCell>
-                  <TableCell className="border border-gray-300 px-4 py-0.5 text-center">
-                    {item.slug}
-                  </TableCell>
+
                   <TableCell className="border border-gray-300 px-4 py-0.5 flex justify-center gap-2">
                     <Button
                       onClick={() => onEdit(item)}

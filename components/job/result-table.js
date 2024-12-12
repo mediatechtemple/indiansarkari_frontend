@@ -214,86 +214,73 @@ const ResultTable = ({ resultData = [], headers = [] }) => {
           </tr>
         </thead>
         <TableBody>
-          {filteredData &&
-            filteredData.length > 0 &&
-            filteredData.map((item) => (
-              <TableRow
-                key={item.id}
-                className="hover:bg-gray-100 transition-all duration-200 text-center"
-              >
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.id}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.title}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {new Date(item?.created_at).toLocaleDateString("en-GB")}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.description}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {" "}
-                  <a
-                    href="#"
-                    onClick={() => openContentDialog(item?.content)}
-                    className="text-blue-500 hover:underline"
-                  >
-                    <GrView size={30} className="text-center text-gray-400" />
-                  </a>
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.dateAdmit}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.dateAnswer}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.dateResult}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.admit}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.answer}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.result}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.seo}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.category}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.subcategory}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.state}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.department}
-                </TableCell>
+          {filteredData.map((item) => (
+            <TableRow
+              key={item.id}
+              className="hover:bg-gray-100 transition-all duration-200 text-center"
+            >
+              <TableCell className="border border-white px-4 py-1">
+                {item?.id}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.title}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {new Date(item?.created_at).toLocaleDateString("en-GB")}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.description}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {" "}
+                <a
+                  href="#"
+                  onClick={() => openContentDialog(item?.job?.content)}
+                  className="text-blue-500 hover:underline"
+                >
+                  <GrView size={30} className="text-center text-gray-400" />
+                </a>
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {new Date(item?.job?.created_at).toLocaleDateString("en-GB")}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.admitcard}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.meta_title}
+              </TableCell>
 
-                <TableCell className="flex justify-end gap-2 px-4 py-1">
-                  <Button
-                    //onClick={() => edit(formData)}
-                    className="bg-blue-500 text-white hover:bg-blue-600 transition duration-150 h-8 w-8"
-                  >
-                    <MdModeEditOutline size={10} />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDelete(item.id)}
-                    className="bg-red-500 text-white hover:bg-red-600 transition duration-150 h-8 w-8"
-                  >
-                    <RiDeleteBin6Line size={10} />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+              <TableCell className="border border-white px-4 py-1">
+                {item?.Category?.name}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.Subcategory?.name}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.State?.name}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {" "}
+                {item?.Depertment?.name}
+              </TableCell>
+              <TableCell className="flex justify-end gap-2 border border-white px-4 py-1">
+                <Button
+                  //onClick={() => edit(formData)}
+                  className="bg-blue-500 text-white hover:bg-blue-600 transition duration-150 h-8 w-8"
+                >
+                  <MdModeEditOutline />
+                </Button>
+                <Button
+                  variant="destructive"
+                  // onClick={() => deleteFormData(formData.id)}
+                  className="bg-red-500 text-white hover:bg-red-600 transition duration-150 h-8 w-8"
+                >
+                  <RiDeleteBin6Line />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>

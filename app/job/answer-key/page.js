@@ -3,13 +3,16 @@ import { answerKeyHeaderControlls } from "@/config";
 import { getData } from "@/utils";
 
 const AnswerKey = async () => {
-  //const admitCardData = await getData("/jobupdate/get/admit-cards");
+  const answerKeyData = await getData("/jobupdate/get/answer-keys");
   return (
     <div className="h-screen w-full">
       <h1 className="text-3xl font-semibold text-center text-blueish font-montserrat">
         Answer Key
       </h1>
-      <AnswerKeyTable answerKeyData={[]} headers={answerKeyHeaderControlls} />
+      <AnswerKeyTable
+        answerKeyData={answerKeyData || []}
+        headers={answerKeyHeaderControlls}
+      />
     </div>
   );
 };

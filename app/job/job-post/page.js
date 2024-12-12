@@ -11,7 +11,10 @@ const JobPost = async () => {
       <h1 className="text-3xl font-semibold text-center text-blueish font-montserrat">
         Job Posting
       </h1>
-      <JobTable jobFormData={jobData?.jobs} headers={jobPostHeaderControlls} />
+      <JobTable
+        jobFormData={jobData?.rows || []}
+        headers={jobPostHeaderControlls}
+      />
     </div>
   );
 };

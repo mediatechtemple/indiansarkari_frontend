@@ -2,27 +2,36 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "../ui/button";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
-import { Dialog } from "../ui/dialog"; // Shadcn UI Dialog for edit
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"; // Shadcn UI Dialog for edit
 import { MdModeEditOutline } from "react-icons/md";
+import parse from "html-react-parser";
+
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { useRouter } from "next/navigation";
 import { htmlToText } from "html-to-text";
-import ModalForm from "./job-modal-form";
 import SearchBar from "../search";
-import Link from "next/link";
 import JobFilters from "../filters/job-filter";
 import AdmitCardFilters from "../filters/admit-card-filter";
+import { deleteData } from "@/utils";
+import { GrView } from "react-icons/gr";
 const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [dialogContent, setDialogContent] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const router = useRouter();
   useEffect(() => {
     if (admitCardData && admitCardData.length > 0) {
       setFilteredData(admitCardData);
     }
   }, [admitCardData]);
+  const handleDelete = async (id) => {
+    try {
+      await deleteData(`/jobupdate/${id}`);
+      setFilteredData((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete the job:", error);
+    }
+  };
+
   const locations = useMemo(() => {
     return Array.from(
       new Set(admitCardData?.map((job) => job.State?.name || ""))
@@ -65,7 +74,6 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
     },
     [admitCardData]
   );
-
   const openContentDialog = (content) => {
     setDialogContent(content);
     setOpenDialog(true);
@@ -156,6 +164,30 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
         Filters By
       </h1>
       <AdmitCardFilters />
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="max-w-[90%] max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="flex justify-between">
+            <DialogTitle>Content Preview</DialogTitle>
+            <input
+              type="text"
+              placeholder="Search content..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="mt-2 p-2 border-none outline-none rounded "
+            />
+          </DialogHeader>
+          <div className="p-4 text-gray-700">
+            {parse(
+              dialogContent
+                .split("\n")
+                .filter((line) =>
+                  line.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .join("\n")
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Table className="w-full table-auto border-collapse border border-white mt-3">
         <thead>
@@ -174,30 +206,67 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
           </tr>
         </thead>
         <TableBody>
-          {admitCardData.map((item) => (
+          {filteredData.map((item) => (
             <TableRow
               key={item.id}
-              className="hover:bg-gray-100 transition-all duration-200"
+              className="hover:bg-gray-100 transition-all duration-200 text-center"
             >
-              {headers.map((header, index) => (
-                <TableCell
-                  key={index}
-                  className="border border-white px-4 py-2"
+              <TableCell className="border border-white px-4 py-1">
+                {item?.id}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.title}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {new Date(item?.created_at).toLocaleDateString("en-GB")}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.description}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {" "}
+                <a
+                  href="#"
+                  onClick={() => openContentDialog(item?.job?.content)}
+                  className="text-blue-500 hover:underline"
                 >
-                  {item[header]}
-                </TableCell>
-              ))}
-              <TableCell className="flex justify-end gap-2 p-4">
+                  <GrView size={30} className="text-center text-gray-400" />
+                </a>
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {new Date(item?.job?.created_at).toLocaleDateString("en-GB")}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.admitcard}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.job?.meta_title}
+              </TableCell>
+
+              <TableCell className="border border-white px-4 py-1">
+                {item?.Category?.name}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.Subcategory?.name}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {item?.State?.name}
+              </TableCell>
+              <TableCell className="border border-white px-4 py-1">
+                {" "}
+                {item?.Depertment?.name}
+              </TableCell>
+              <TableCell className="flex justify-end gap-2 border border-white px-4 py-1">
                 <Button
                   //onClick={() => edit(formData)}
-                  className="bg-blue-500 text-white"
+                  className="bg-blue-500 text-white hover:bg-blue-600 transition duration-150 h-8 w-8"
                 >
                   <MdModeEditOutline />
                 </Button>
                 <Button
                   variant="destructive"
-                  // onClick={() => deleteFormData(formData.id)}
-                  className="bg-red-500 text-white"
+                  onClick={() => handleDelete(item.id)}
+                  className="bg-red-500 text-white hover:bg-red-600 transition duration-150 h-8 w-8"
                 >
                   <RiDeleteBin6Line />
                 </Button>

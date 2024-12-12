@@ -11,35 +11,46 @@ import Loading from "@/app/loading";
 const AddJobPost = () => {
   const [jobFormData, setJobFormData] = useState(initialJobFormData);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // State for error messages
   const router = useRouter();
 
   const handleJobFormSubmit = async (event) => {
     event.preventDefault();
+
     setLoading(true);
-    delete jobFormData.state_id;
-    delete jobFormData.subcategory_id;
-    delete jobFormData.department_id;
-    const data = await postData(`/job`, jobFormData);
-    if (data) {
-      setJobFormData(initialJobFormData);
-      router.back("/job/job-post");
-    } else {
+    setError(""); // Reset error message before submitting
+    console.log(jobFormData);
+
+    try {
+      const data = await postData(`/job`, jobFormData);
+      if (data) {
+        setJobFormData(initialJobFormData);
+
+        router.push("/job/job-post");
+        setLoading(false);
+      } else {
+        throw new Error("Job post creation failed. Please try again.");
+      }
+    } catch (err) {
       setLoading(false);
+      setError(err.message || "An unexpected error occurred.");
     }
   };
 
   const checkIfFormIsValid = () => {
     return jobFormData.title;
   };
+
   if (loading) {
     return <Loading />;
   }
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <Card className="min-w-full shadow-lg">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-2xl  text-lightBlue font-montserrat">
+            <CardTitle className="text-2xl text-lightBlue font-montserrat">
               Create Job Post
             </CardTitle>
             <RiCloseLine
@@ -49,9 +60,11 @@ const AddJobPost = () => {
           </div>
         </CardHeader>
         <CardContent className="p-5">
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}{" "}
+          {/* Display error */}
           <CommonForm
             formControlls={jobPostFormControlls}
-            buttonText="Create"
+            buttonText={loading ? "Submitting..." : "Submit"}
             formData={jobFormData}
             setFormData={setJobFormData}
             isButtonDisabled={!checkIfFormIsValid()}

@@ -1,8 +1,6 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { Input } from "../ui/input";
 import { RiSearchLine } from "@remixicon/react";
-import { placeholder } from "jodit/esm/plugins/placeholder/placeholder";
 const debounce = (fn, delay) => {
   let timeOutID;
   return (...args) => {
@@ -15,12 +13,9 @@ const debounce = (fn, delay) => {
 const SearchBar = ({ onSearch, placeholder }) => {
   const [searchValue, setSearchValue] = useState("");
 
-  const debounceSearch = useCallback(
-    debounce((value) => {
-      onSearch(value);
-    }, 300),
-    [onSearch]
-  );
+  const debounceSearch = debounce((value) => {
+    onSearch(value);
+  }, 300);
 
   const handelInputChange = (e) => {
     const value = e.target.value;
