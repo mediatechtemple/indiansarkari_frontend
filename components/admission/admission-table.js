@@ -7,24 +7,24 @@ import { MdModeEditOutline } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import { htmlToText } from "html-to-text";
-import ModalForm from "./job-modal-form";
 import SearchBar from "../search";
 import Link from "next/link";
 import { FiUploadCloud } from "react-icons/fi";
 
 import { GrView } from "react-icons/gr";
 
-import JobFilters from "../filters/job-filter";
 import parse from "html-react-parser";
 
 import { deleteData, initialJobFormData, putData } from "@/utils";
 import { jobPostFormControlls } from "@/config";
 import CommonForm from "../common-form";
-const JobTable = ({ jobFormData = [], headers = [] }) => {
+import ModalForm from "./admission-modal-form";
+import AdmissionFilters from "../filters/admission-filter/index.";
+const AdmissionTable = ({ admissionFormData = [], headers = [] }) => {
   const [showModel, setShowModel] = useState(false);
   const [editDailog, setEditDailog] = useState(false);
   const [formData, setFormData] = useState(initialJobFormData);
-  const [jobID, setJobID] = useState(null);
+  const [admissionID, setAdmissionID] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
   const [dialogContent, setDialogContent] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
@@ -32,7 +32,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
   const router = useRouter();
   const handleDelete = async (id) => {
     try {
-      await deleteData(`/job/${id}`);
+      await deleteData(`/admission/${id}`);
       setFilteredData((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Failed to delete the job:", error);
@@ -56,77 +56,85 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
           ...formData,
           content: encodeURIComponent(formData.content || ""),
         };
-        await putData(`/job/${formData.id}`, updatedData);
+        await putData(`/admission/${formData.id}`, updatedData);
         setEditDailog(false);
         router.refresh();
       } catch (error) {
-        console.error("Failed to update the job:", error);
+        console.error("Failed to update the admission:", error);
       }
     }
   };
 
   useEffect(() => {
-    if (jobFormData && jobFormData.length > 0) {
-      setFilteredData(jobFormData);
+    if (admissionFormData && admissionFormData.length > 0) {
+      setFilteredData(admissionFormData);
     }
-  }, [jobFormData]);
+  }, [admissionFormData]);
   const locations = useMemo(() => {
     return Array.from(
-      new Set(jobFormData?.map((job) => job.State?.name || ""))
+      new Set(admissionFormData?.map((job) => job.State?.name || ""))
     );
-  }, [jobFormData]);
+  }, [admissionFormData]);
 
   const categories = useMemo(() => {
     return Array.from(
-      new Set(jobFormData?.map((job) => job.Category?.name || ""))
+      new Set(admissionFormData?.map((job) => job.Category?.name || ""))
     );
-  }, [jobFormData]);
+  }, [admissionFormData]);
   const departments = useMemo(() => {
     return Array.from(
-      new Set(jobFormData?.map((job) => job.Depertment?.name || ""))
+      new Set(admissionFormData?.map((job) => job.Depertment?.name || ""))
     );
-  }, [jobFormData]);
+  }, [admissionFormData]);
 
   const contentData = useMemo(() => {
-    return jobFormData?.map((contentItem) =>
+    return admissionFormData?.map((contentItem) =>
       htmlToText(contentItem.content, {
         wordwrap: 130,
         selectors: [{ selector: "a", options: { ignoreHref: true } }],
       })
     );
-  }, [jobFormData]);
+  }, [admissionFormData]);
 
   const handleSearch = useCallback(
     (term) => {
       const searchTerms = term.split(",").map((t) => t.trim().toLowerCase());
 
-      const filtered = jobFormData.filter((formData) => {
-        // Flatten top-level and nested fields into a single array of values
-        const allValues = [
-          ...Object.values(formData),
-          formData.Category?.name,
-          formData.Department?.name,
-          formData.State?.name,
-          formData.Subcategory?.name,
-        ]
-          .filter(Boolean) // Exclude null/undefined values
-          .map((value) =>
-            typeof value === "string" ? value.toLowerCase() : ""
-          );
+      const filtered = admissionFormData.filter((formData) =>
+        searchTerms.some((searchTerm) => {
+          // Format the created_at date as per the desired format
+          const formattedDate = new Date(
+            formData?.created_at
+          ).toLocaleDateString("en-GB");
 
-        // Match at least one search term with any of the values
-        return searchTerms.some((searchTerm) =>
-          allValues.some((value) => value.includes(searchTerm))
-        );
-      });
+          // Convert object values and nested fields to strings for search
+          return (
+            // Check direct fields (id, title, description, etc.)
+            Object.values(formData).some(
+              (value) =>
+                (typeof value === "string" &&
+                  value.toLowerCase().includes(searchTerm)) ||
+                (typeof value === "number" &&
+                  value.toString().toLowerCase().includes(searchTerm))
+            ) ||
+            // Check nested fields (e.g., Category.name, State.name, etc.)
+            formData.Category?.name?.toLowerCase().includes(searchTerm) ||
+            formData.Subcategory?.name?.toLowerCase().includes(searchTerm) ||
+            formData.State?.name?.toLowerCase().includes(searchTerm) ||
+            formData.Depertment?.name?.toLowerCase().includes(searchTerm) ||
+            // Check formatted created_at date
+            formattedDate.includes(searchTerm)
+          );
+        })
+      );
 
       setFilteredData(filtered);
     },
-    [jobFormData]
+    [admissionFormData]
   );
 
   function OpenHandler(id) {
-    setJobID(id);
+    setAdmissionID(id);
     setShowModel(true);
   }
 
@@ -137,7 +145,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
   };
 
   const handleFilter = (filters) => {
-    const filtered = jobFormData.filter((job) => {
+    const filtered = admissionFormData.filter((job) => {
       const locationMatch = job["State"]["name"]
         .toLowerCase()
         .includes(filters.location.toLowerCase());
@@ -161,48 +169,18 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
         jobDate && dateFrom && dateTo
           ? jobDate >= dateFrom && jobDate <= dateTo
           : true; // No filter selected, match all
+      console.log(publishDateMatch);
 
       const contentMatch = job["content"]
         .toLowerCase()
         .includes(filters.content.toLowerCase());
 
-      const salaryMatch = job["content"].match(/salary\s*=\s*(\d+)-(\d+)/);
-      const salaryInRange =
-        salaryMatch &&
-        filters.salary >= Number(salaryMatch[1]) &&
-        filters.salary <= Number(salaryMatch[2]);
-
-      // Age check
-      const ageMatch = job["content"].match(/age\s*=\s*(\d+)-(\d+)/);
-      const ageInRange =
-        ageMatch &&
-        filters.age >= Number(ageMatch[1]) &&
-        filters.age <= Number(ageMatch[2]);
-
-      //exprience check
-      const exprienceMatch = job["content"].match(
-        /exprience\s*=\s*(\d+)-(\d+)/
-      );
-      const exprienceInRange =
-        exprienceMatch &&
-        filters.exprience >= Number(exprienceMatch[1]) &&
-        filters.exprience <= Number(exprienceMatch[2]);
-
-      // If no filters for age, default to true
-      const ageRangeValid = filters.age ? ageInRange : true;
-      // If no filters for salary, default to true
-      const salaryRangeValid = filters.salary ? salaryInRange : true;
-      // If no filters for exprience, default to true
-      const exprienceRangeValid = filters.exprience ? exprienceInRange : true;
       return (
         locationMatch &&
         departmentMatch &&
         categoryMatch &&
         contentMatch &&
-        publishDateMatch &&
-        salaryRangeValid &&
-        ageRangeValid &&
-        exprienceRangeValid
+        publishDateMatch
       );
     });
 
@@ -214,17 +192,17 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
       <div className="flex justify-between items-center">
         <SearchBar
           onSearch={handleSearch}
-          placeholder="Search Across Job Post..."
+          placeholder="Search Across Admission Post..."
         />
 
         <Button className="bg-primary text-white font-montserrat rounded-xl">
-          <Link href="/job/add-job-post">Add New Job +</Link>
+          <Link href="/admission/add-admission-post">Add New Admission +</Link>
         </Button>
       </div>
       <h1 className="text-2xl font-semibold text-blueish font-montserrat">
         Filters By
       </h1>
-      <JobFilters
+      <AdmissionFilters
         onApplyFilter={handleFilter}
         locations={locations}
         categories={categories}
@@ -235,7 +213,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
       <ModalForm
         showModal={showModel}
         setShowModal={setShowModel}
-        jobId={jobID}
+        admissionId={admissionID}
       />
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="max-w-[90%] max-h-[80vh] overflow-y-auto">
@@ -319,15 +297,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
                 <TableCell className="border border-white px-4 py-1">
                   {new Date(item?.updated_at).toLocaleDateString("en-GB")}
                 </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.admit_card_released}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.answer_key_released}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.result_released}
-                </TableCell>
+
                 <TableCell className="border border-white px-4 py-1">
                   {item?.meta_title}
                 </TableCell>
@@ -391,4 +361,4 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
   );
 };
 
-export default JobTable;
+export default AdmissionTable;

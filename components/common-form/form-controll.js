@@ -1,16 +1,9 @@
 "use client";
-import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import AsyncSelect from "react-select/async";
 
 import dynamic from "next/dynamic"; // Ensure this import is present
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+
 import { Textarea } from "../ui/textarea";
 import { useEffect, useState } from "react";
 
@@ -62,7 +55,7 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
     };
 
     fetchAllOptions();
-  }, [formControls]);
+  }, []);
   const renderComponentByType = (controlItem) => {
     const currentControlItemValue = formData[controlItem.name];
 
@@ -124,7 +117,7 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
         return (
           <JoditEditor
             // ref={editor}
-            value={formData[controlItem.name]}
+            value={formData[controlItem.name] || ""}
             onChange={(newContent) =>
               setFormData({
                 ...formData,
@@ -151,6 +144,11 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
           />
         );
       case "select":
+        const options =
+          controlItem.options || // Use static options if available
+          optionsData[controlItem.name] || // Fallback to fetched options
+          [];
+
         return (
           <div className="w-full">
             <select
@@ -166,13 +164,13 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-300 text-gray-700 bg-white transition duration-200 ease-in-out hover:border-blue-400"
             >
               <option value="" disabled className="text-gray-400">
-                {controlItem.label}
+                Select {controlItem.label}
               </option>
-              {(optionsData[controlItem.name] || []).map((optionItem) => (
+              {options.map((optionItem) => (
                 <option
-                  key={optionItem.id}
-                  value={optionItem.id}
-                  className="text-gray-700 "
+                  key={optionItem.value || optionItem.id}
+                  value={optionItem.value || optionItem.id}
+                  className="text-gray-700"
                 >
                   {optionItem.label}
                 </option>
@@ -180,6 +178,7 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
             </select>
           </div>
         );
+
       case "textarea":
         return (
           <Textarea

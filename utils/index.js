@@ -9,9 +9,10 @@ export const jobManagementItems = [
 ];
 
 export const AdmissionManagementItems = [
-  { label: "Schools", path: "/school" },
-  { label: "Collages", path: "/collage" },
-  { label: "Unversities", path: "/university" },
+  { label: "Admission", path: "/admission/admission-post" },
+  { label: "Schools", path: "/admission/school" },
+  { label: "Collages", path: "/admission/collage" },
+  { label: "Unversities", path: "/admission/university" },
 ];
 
 export const studyMetarialManagementItems = [
@@ -40,6 +41,9 @@ export const initialJobFormData = {
   category_id: "",
   subcategory_id: "",
   department_id: "",
+  admit_card_released: "no",
+  answer_key_released: "no",
+  result_released: "no",
 };
 
 // utils/index.js

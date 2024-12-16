@@ -7,17 +7,20 @@ const Footer = () => {
       <h5 className="text-white text-[16px] font-normal">
         <RiCopyrightLine className="inline-block mr-1" size={17} />
         All Rights Reserved to{" "}
-        <span>
-          <a href="#" className="text-[#172F5F]">
-            MediaTechTemple
-          </a>
-        </span>
-        . Design & Developed by{" "}
-        <span>
-          <a href="#" className="text-[#172F5F]">
-            MediaTechTemple
-          </a>
-        </span>
+        <a
+          href="https://www.mediatechtemple.com/web-design-and-development-services/"
+          target="_blank"
+          title="Media Tech Temple"
+        >
+          Website Developed By
+        </a>
+        <a
+          href="https://mediatechtemple.com/"
+          target="_blank"
+          title="Media Tech Temple"
+        >
+          &nbsp;Media Tech Temple
+        </a>
       </h5>
     </div>
   );

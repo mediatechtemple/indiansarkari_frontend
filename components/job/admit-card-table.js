@@ -9,13 +9,16 @@ import parse from "html-react-parser";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { htmlToText } from "html-to-text";
 import SearchBar from "../search";
-import JobFilters from "../filters/job-filter";
 import AdmitCardFilters from "../filters/admit-card-filter";
-import { deleteData } from "@/utils";
+import { deleteData, initialJobFormData, putData } from "@/utils";
 import { GrView } from "react-icons/gr";
+import { jobPostFormControlls } from "@/config";
+import CommonForm from "../common-form";
 const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [dialogContent, setDialogContent] = useState("");
+  const [editDailog, setEditDailog] = useState(false);
+  const [formData, setFormData] = useState(initialJobFormData);
   const [openDialog, setOpenDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
@@ -31,6 +34,27 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
       console.error("Failed to delete the job:", error);
     }
   };
+  const handleEdit = (item) => {
+    //console.log(item);
+    setEditDailog(true);
+    setFormData(item);
+  };
+  const Remove = () => {
+    setFormData(initialJobFormData);
+    setEditDailog(false);
+  };
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.id) {
+      try {
+        await putData(`/jobupdate/${formData.id}`, formData);
+        setEditDailog(false);
+        router.refresh();
+      } catch (error) {
+        console.error("Failed to update the job:", error);
+      }
+    }
+  };
 
   const locations = useMemo(() => {
     return Array.from(
@@ -39,12 +63,12 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
   }, [admitCardData]);
 
   const categories = useMemo(() => {
-    Array.from(
+    return Array.from(
       new Set(admitCardData?.map((job) => job.Category?.name || "") || [])
     );
   }, [admitCardData]);
   const departments = useMemo(() => {
-    Array.from(
+    return Array.from(
       new Set(admitCardData?.map((job) => job.Depertment?.name || "") || [])
     );
   }, [admitCardData]);
@@ -63,17 +87,31 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
       const searchTerms = term.split(",").map((t) => t.trim().toLowerCase());
       const filtered = admitCardData.filter((formData) =>
         searchTerms.some((searchTerm) =>
-          Object.values(formData).some(
-            (value) =>
+          // Check all values in the top-level object
+          Object.values(formData).some((value) => {
+            if (
               typeof value === "string" &&
               value.toLowerCase().includes(searchTerm)
-          )
+            ) {
+              return true;
+            }
+            // Check nested objects (job, Category, Department, etc.)
+            if (typeof value === "object" && value !== null) {
+              return Object.values(value).some(
+                (nestedValue) =>
+                  typeof nestedValue === "string" &&
+                  nestedValue.toLowerCase().includes(searchTerm)
+              );
+            }
+            return false;
+          })
         )
       );
       setFilteredData(filtered);
     },
     [admitCardData]
   );
+
   const openContentDialog = (content) => {
     setDialogContent(content);
     setOpenDialog(true);
@@ -93,12 +131,22 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
         .toLowerCase()
         .includes(filters.category.toLowerCase());
 
-      const jobDate = job.created_at ? new Date(job.created_at) : null;
+      const jobDate = job?.created_at ? new Date(job?.created_at) : null;
+      const admitCardDate = job?.job?.created_at
+        ? new Date(job?.job?.created_at)
+        : null;
+
       const dateFrom = filters.publishDate?.from
         ? new Date(filters.publishDate.from)
         : null;
       const dateTo = filters.publishDate?.to
         ? new Date(filters.publishDate.to)
+        : null;
+      const admitCardDateFrom = filters.admitCardDate?.from
+        ? new Date(filters.admitCardDate.from)
+        : null;
+      const admitCardDateTo = filters.admitCardDate?.to
+        ? new Date(filters.admitCardDate.to)
         : null;
 
       const publishDateMatch =
@@ -106,47 +154,23 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
           ? jobDate >= dateFrom && jobDate <= dateTo
           : true; // No filter selected, match all
 
-      const contentMatch = job["content"]
+      const admitCardDateMatch =
+        admitCardDate && admitCardDateFrom && admitCardDateTo
+          ? admitCardDate >= admitCardDateFrom &&
+            admitCardDate <= admitCardDateTo
+          : true;
+
+      const contentMatch = job["job"]["content"]
         .toLowerCase()
         .includes(filters.content.toLowerCase());
 
-      const salaryMatch = job["content"].match(/salary\s*=\s*(\d+)-(\d+)/);
-      const salaryInRange =
-        salaryMatch &&
-        filters.salary >= Number(salaryMatch[1]) &&
-        filters.salary <= Number(salaryMatch[2]);
-
-      // Age check
-      const ageMatch = job["content"].match(/age\s*=\s*(\d+)-(\d+)/);
-      const ageInRange =
-        ageMatch &&
-        filters.age >= Number(ageMatch[1]) &&
-        filters.age <= Number(ageMatch[2]);
-
-      //exprience check
-      const exprienceMatch = job["content"].match(
-        /exprience\s*=\s*(\d+)-(\d+)/
-      );
-      const exprienceInRange =
-        exprienceMatch &&
-        filters.exprience >= Number(exprienceMatch[1]) &&
-        filters.exprience <= Number(exprienceMatch[2]);
-
-      // If no filters for age, default to true
-      const ageRangeValid = filters.age ? ageInRange : true;
-      // If no filters for salary, default to true
-      const salaryRangeValid = filters.salary ? salaryInRange : true;
-      // If no filters for exprience, default to true
-      const exprienceRangeValid = filters.exprience ? exprienceInRange : true;
       return (
         locationMatch &&
         departmentMatch &&
         categoryMatch &&
         contentMatch &&
         publishDateMatch &&
-        salaryRangeValid &&
-        ageRangeValid &&
-        exprienceRangeValid
+        admitCardDateMatch
       );
     });
 
@@ -163,7 +187,15 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
       <h1 className="text-2xl font-semibold text-blueish font-montserrat">
         Filters By
       </h1>
-      <AdmitCardFilters />
+      <AdmitCardFilters
+        onApplyFilter={handleFilter}
+        locations={locations}
+        categories={categories}
+        departments={departments}
+        contentData={contentData}
+        dataPlaceholder="Admit Card..."
+        dateLabel="Publish Date of Admit Card"
+      />
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="max-w-[90%] max-h-[80vh] overflow-y-auto">
           <DialogHeader className="flex justify-between">
@@ -209,7 +241,7 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
           {filteredData.map((item) => (
             <TableRow
               key={item.id}
-              className="hover:bg-gray-100 transition-all duration-200 text-center"
+              className="hover:bg-gray-100 transition-all duration-200 text-center truncate"
             >
               <TableCell className="border border-white px-4 py-1">
                 {item?.id}
@@ -258,11 +290,28 @@ const AdmitCardTable = ({ admitCardData = [], headers = [] }) => {
               </TableCell>
               <TableCell className="flex justify-end gap-2 border border-white px-4 py-1">
                 <Button
-                  //onClick={() => edit(formData)}
+                  onClick={() => handleEdit(item)}
                   className="bg-blue-500 text-white hover:bg-blue-600 transition duration-150 h-8 w-8"
                 >
                   <MdModeEditOutline />
                 </Button>
+                {/* Dialog for Form */}
+                <Dialog open={editDailog} onOpenChange={Remove}>
+                  <DialogContent className="max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-lg w-full max-w-3xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold text-gray-800">
+                        Update Job Post
+                      </DialogTitle>
+                    </DialogHeader>
+                    <CommonForm
+                      formControlls={jobPostFormControlls}
+                      formData={formData}
+                      setFormData={setFormData}
+                      buttonText={"Update"}
+                      handleSubmit={handleEditSubmit}
+                    />
+                  </DialogContent>
+                </Dialog>
                 <Button
                   variant="destructive"
                   onClick={() => handleDelete(item.id)}

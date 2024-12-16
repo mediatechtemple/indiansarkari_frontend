@@ -1,14 +1,13 @@
 "use client";
-
-import React, { useState } from "react";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { apiurl } from "@/utils";
+import React, { useState } from "react";
 
-const ModalForm = ({ showModal, setShowModal, jobId }) => {
+const ModalForm = ({ showModal, setShowModal, admissionId }) => {
   const [formData, setFormData] = useState({
     update_type: "",
-    job_id: "",
+    admission_id: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -19,19 +18,21 @@ const ModalForm = ({ showModal, setShowModal, jobId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // console.log(formData);
+    // return;
     setLoading(true);
     try {
-      const apiResponse = await fetch(`${apiurl}/jobupdate`, {
+      const apiResponse = await fetch(`${apiurl}/upadmis`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, job_id: jobId }),
+        body: JSON.stringify({ ...formData, admission_id: admissionId }),
       });
       if (!apiResponse.ok) throw new Error("something went wrong");
       setFormData({
         update_type: "",
-        job_id: "",
+        admission_id: "",
       });
     } catch (error) {
       console.log(error);
@@ -82,14 +83,14 @@ const ModalForm = ({ showModal, setShowModal, jobId }) => {
                   <option value="" className="text-lg">
                     Select Type
                   </option>
-                  <option value="admit_card" className="text-lg">
-                    Admit Card
+                  <option value="schools" className="text-lg">
+                    School Admission
                   </option>
-                  <option value="answer_key" className="text-lg">
-                    Answer Key
+                  <option value="college" className="text-lg">
+                    Collage Admission
                   </option>
-                  <option value="result" className="text-lg">
-                    Result
+                  <option value="universities" className="text-lg">
+                    University Admission
                   </option>
                   <option value="other" className="text-lg">
                     Other

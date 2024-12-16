@@ -2,14 +2,15 @@
 import React, { useState } from "react";
 import CommonForm from "@/components/common-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { jobPostFormControlls } from "@/config";
+import { admissionPostFormControlls } from "@/config";
 import { initialJobFormData, postData } from "@/utils";
 import { RiCloseLine } from "@remixicon/react";
 import { useRouter } from "next/navigation";
 import Loading from "@/app/loading";
 
-const AddJobPost = () => {
-  const [jobFormData, setJobFormData] = useState(initialJobFormData);
+const AddAdmissionPost = () => {
+  const [admissionFormData, setAdmissionFormData] =
+    useState(initialJobFormData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(""); // State for error messages
   const router = useRouter();
@@ -21,14 +22,14 @@ const AddJobPost = () => {
     setError(""); // Reset error message before submitting
 
     try {
-      const data = await postData(`/job`, jobFormData);
+      const data = await postData(`/admission`, admissionFormData);
       if (data) {
-        setJobFormData(initialJobFormData);
+        setAdmissionFormData(initialJobFormData);
 
-        router.push("/job/job-post");
+        router.push("/admission/admission-post");
         setLoading(false);
       } else {
-        throw new Error("Job post creation failed. Please try again.");
+        throw new Error("Admission post creation failed. Please try again.");
       }
     } catch (err) {
       setLoading(false);
@@ -37,7 +38,7 @@ const AddJobPost = () => {
   };
 
   const checkIfFormIsValid = () => {
-    return jobFormData.title;
+    return admissionFormData.title;
   };
 
   if (loading) {
@@ -50,10 +51,10 @@ const AddJobPost = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-2xl text-lightBlue font-montserrat">
-              Create Job Post
+              Create Admission Post
             </CardTitle>
             <RiCloseLine
-              onClick={() => router.back("/job/job-post")}
+              onClick={() => router.back("/admission/admission-post")}
               className="w-6 h-6 cursor-pointer font-bold"
             />
           </div>
@@ -62,10 +63,10 @@ const AddJobPost = () => {
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}{" "}
           {/* Display error */}
           <CommonForm
-            formControlls={jobPostFormControlls}
+            formControlls={admissionPostFormControlls}
             buttonText={loading ? "Submitting..." : "Submit"}
-            formData={jobFormData}
-            setFormData={setJobFormData}
+            formData={admissionFormData}
+            setFormData={setAdmissionFormData}
             isButtonDisabled={!checkIfFormIsValid()}
             handleSubmit={handleJobFormSubmit}
           />
@@ -75,4 +76,4 @@ const AddJobPost = () => {
   );
 };
 
-export default AddJobPost;
+export default AddAdmissionPost;

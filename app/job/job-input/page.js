@@ -59,8 +59,9 @@ const JobInput = () => {
     }
   };
 
-  const onEdit = (item) => {
+  const onEdit = (item, type) => {
     setFormData(item);
+    setFormType(type);
     setDialogOpen(true);
   };
   const Remove = () => {
@@ -199,7 +200,7 @@ const JobInput = () => {
           <JobinputCommonTable
             data={categoryData}
             headers={categoryHeaderControlls}
-            onEdit={onEdit}
+            onEdit={(item) => onEdit(item, "category")}
             onDelete={(id) => handleDelete(id, "category")}
           />
         </section>
@@ -210,7 +211,7 @@ const JobInput = () => {
           <JobinputCommonTable
             data={subCategoryData}
             headers={subCategoryHeaderControlls}
-            onEdit={onEdit}
+            onEdit={(item) => onEdit(item, "subcategory")}
             onDelete={(id) => handleDelete(id, "subcategory")}
           />
         </section>
@@ -221,7 +222,7 @@ const JobInput = () => {
           <JobinputCommonTable
             data={departmentData}
             headers={departmentHeaderControlls}
-            onEdit={onEdit}
+            onEdit={(item) => onEdit(item, "department")}
             onDelete={(id) => handleDelete(id, "department")}
           />
         </section>
@@ -232,7 +233,7 @@ const JobInput = () => {
           <JobinputCommonTable
             data={stateData}
             headers={stateHeaderControlls}
-            onEdit={onEdit}
+            onEdit={(item) => onEdit(item, "state")}
             onDelete={(id) => handleDelete(id, "state")}
           />
         </section>

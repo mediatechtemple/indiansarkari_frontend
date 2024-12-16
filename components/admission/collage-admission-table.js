@@ -7,24 +7,22 @@ import { MdModeEditOutline } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import { htmlToText } from "html-to-text";
-import ModalForm from "./job-modal-form";
 import SearchBar from "../search";
-import Link from "next/link";
-import { FiUploadCloud } from "react-icons/fi";
 
 import { GrView } from "react-icons/gr";
 
-import JobFilters from "../filters/job-filter";
 import parse from "html-react-parser";
 
 import { deleteData, initialJobFormData, putData } from "@/utils";
 import { jobPostFormControlls } from "@/config";
 import CommonForm from "../common-form";
-const JobTable = ({ jobFormData = [], headers = [] }) => {
-  const [showModel, setShowModel] = useState(false);
+import AdmissionFilters from "../filters/admission-filter/index.";
+const CollageAdmissionTable = ({
+  collageAdmissionFormData = [],
+  headers = [],
+}) => {
   const [editDailog, setEditDailog] = useState(false);
   const [formData, setFormData] = useState(initialJobFormData);
-  const [jobID, setJobID] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
   const [dialogContent, setDialogContent] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
@@ -32,7 +30,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
   const router = useRouter();
   const handleDelete = async (id) => {
     try {
-      await deleteData(`/job/${id}`);
+      await deleteData(`/upadmis/${id}`);
       setFilteredData((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Failed to delete the job:", error);
@@ -56,80 +54,76 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
           ...formData,
           content: encodeURIComponent(formData.content || ""),
         };
-        await putData(`/job/${formData.id}`, updatedData);
+        await putData(`/upadmis/${formData.id}`, updatedData);
         setEditDailog(false);
         router.refresh();
       } catch (error) {
-        console.error("Failed to update the job:", error);
+        console.error("Failed to update the admission:", error);
       }
     }
   };
 
   useEffect(() => {
-    if (jobFormData && jobFormData.length > 0) {
-      setFilteredData(jobFormData);
+    if (collageAdmissionFormData && collageAdmissionFormData.length > 0) {
+      setFilteredData(collageAdmissionFormData);
     }
-  }, [jobFormData]);
+  }, [collageAdmissionFormData]);
   const locations = useMemo(() => {
     return Array.from(
-      new Set(jobFormData?.map((job) => job.State?.name || ""))
+      new Set(collageAdmissionFormData?.map((job) => job.State?.name || ""))
     );
-  }, [jobFormData]);
+  }, [collageAdmissionFormData]);
 
   const categories = useMemo(() => {
     return Array.from(
-      new Set(jobFormData?.map((job) => job.Category?.name || ""))
+      new Set(collageAdmissionFormData?.map((job) => job.Category?.name || ""))
     );
-  }, [jobFormData]);
+  }, [collageAdmissionFormData]);
   const departments = useMemo(() => {
     return Array.from(
-      new Set(jobFormData?.map((job) => job.Depertment?.name || ""))
+      new Set(
+        collageAdmissionFormData?.map((job) => job.Depertment?.name || "")
+      )
     );
-  }, [jobFormData]);
+  }, [collageAdmissionFormData]);
 
   const contentData = useMemo(() => {
-    return jobFormData?.map((contentItem) =>
-      htmlToText(contentItem.content, {
+    return collageAdmissionFormData?.map((contentItem) =>
+      htmlToText(contentItem?.admission?.content, {
         wordwrap: 130,
         selectors: [{ selector: "a", options: { ignoreHref: true } }],
       })
     );
-  }, [jobFormData]);
+  }, [collageAdmissionFormData]);
 
   const handleSearch = useCallback(
     (term) => {
+      // Split search terms by commas, trim, and convert to lowercase
       const searchTerms = term.split(",").map((t) => t.trim().toLowerCase());
 
-      const filtered = jobFormData.filter((formData) => {
-        // Flatten top-level and nested fields into a single array of values
-        const allValues = [
-          ...Object.values(formData),
-          formData.Category?.name,
-          formData.Department?.name,
-          formData.State?.name,
-          formData.Subcategory?.name,
-        ]
-          .filter(Boolean) // Exclude null/undefined values
-          .map((value) =>
-            typeof value === "string" ? value.toLowerCase() : ""
-          );
+      // Filter the data
+      const filtered = collageAdmissionFormData.filter((formData) =>
+        searchTerms.some(
+          (searchTerm) =>
+            // Check for matches in top-level and nested properties
+            Object.values(formData?.admission).some(
+              (value) =>
+                typeof value === "string" &&
+                value.toLowerCase().includes(searchTerm)
+            ) ||
+            //formData.admission?.title?.toLowerCase().includes(searchTerm) ||
+            formData.Category?.name?.toLowerCase().includes(searchTerm) ||
+            formData.Depertment?.name?.toLowerCase().includes(searchTerm) ||
+            formData.State?.name?.toLowerCase().includes(searchTerm) ||
+            formData.Subcategory?.name?.toLowerCase().includes(searchTerm)
+        )
+      );
 
-        // Match at least one search term with any of the values
-        return searchTerms.some((searchTerm) =>
-          allValues.some((value) => value.includes(searchTerm))
-        );
-      });
-
+      // Update the filtered data state
       setFilteredData(filtered);
     },
-    [jobFormData]
+    [collageAdmissionFormData]
   );
-
-  function OpenHandler(id) {
-    setJobID(id);
-    setShowModel(true);
-  }
-
   const openContentDialog = (content) => {
     setDialogContent(content);
     setOpenDialog(true);
@@ -137,7 +131,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
   };
 
   const handleFilter = (filters) => {
-    const filtered = jobFormData.filter((job) => {
+    const filtered = collageAdmissionFormData.filter((job) => {
       const locationMatch = job["State"]["name"]
         .toLowerCase()
         .includes(filters.location.toLowerCase());
@@ -161,48 +155,18 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
         jobDate && dateFrom && dateTo
           ? jobDate >= dateFrom && jobDate <= dateTo
           : true; // No filter selected, match all
+      console.log(publishDateMatch);
 
-      const contentMatch = job["content"]
+      const contentMatch = job["admission"]["content"]
         .toLowerCase()
         .includes(filters.content.toLowerCase());
 
-      const salaryMatch = job["content"].match(/salary\s*=\s*(\d+)-(\d+)/);
-      const salaryInRange =
-        salaryMatch &&
-        filters.salary >= Number(salaryMatch[1]) &&
-        filters.salary <= Number(salaryMatch[2]);
-
-      // Age check
-      const ageMatch = job["content"].match(/age\s*=\s*(\d+)-(\d+)/);
-      const ageInRange =
-        ageMatch &&
-        filters.age >= Number(ageMatch[1]) &&
-        filters.age <= Number(ageMatch[2]);
-
-      //exprience check
-      const exprienceMatch = job["content"].match(
-        /exprience\s*=\s*(\d+)-(\d+)/
-      );
-      const exprienceInRange =
-        exprienceMatch &&
-        filters.exprience >= Number(exprienceMatch[1]) &&
-        filters.exprience <= Number(exprienceMatch[2]);
-
-      // If no filters for age, default to true
-      const ageRangeValid = filters.age ? ageInRange : true;
-      // If no filters for salary, default to true
-      const salaryRangeValid = filters.salary ? salaryInRange : true;
-      // If no filters for exprience, default to true
-      const exprienceRangeValid = filters.exprience ? exprienceInRange : true;
       return (
         locationMatch &&
         departmentMatch &&
         categoryMatch &&
         contentMatch &&
-        publishDateMatch &&
-        salaryRangeValid &&
-        ageRangeValid &&
-        exprienceRangeValid
+        publishDateMatch
       );
     });
 
@@ -211,20 +175,15 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
 
   return (
     <div>
-      <div className="flex justify-between items-center">
-        <SearchBar
-          onSearch={handleSearch}
-          placeholder="Search Across Job Post..."
-        />
+      <SearchBar
+        onSearch={handleSearch}
+        placeholder="Search Across School Admission..."
+      />
 
-        <Button className="bg-primary text-white font-montserrat rounded-xl">
-          <Link href="/job/add-job-post">Add New Job +</Link>
-        </Button>
-      </div>
       <h1 className="text-2xl font-semibold text-blueish font-montserrat">
         Filters By
       </h1>
-      <JobFilters
+      <AdmissionFilters
         onApplyFilter={handleFilter}
         locations={locations}
         categories={categories}
@@ -232,11 +191,6 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
         contentData={contentData}
       />
 
-      <ModalForm
-        showModal={showModel}
-        setShowModal={setShowModel}
-        jobId={jobID}
-      />
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="max-w-[90%] max-h-[80vh] overflow-y-auto">
           <DialogHeader className="flex justify-between">
@@ -292,44 +246,32 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
                   {item?.id}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
-                  {item?.title}
+                  {item?.admission?.title}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
                   {new Date(item?.created_at).toLocaleDateString("en-GB")}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
-                  {item?.description}
+                  {item?.admission?.description}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
                   {" "}
                   <a
                     href="#"
-                    onClick={() => openContentDialog(item?.content)}
+                    onClick={() => openContentDialog(item?.admission?.content)}
                     className="text-blue-500 hover:underline"
                   >
                     <GrView size={30} className="text-center text-gray-400" />
                   </a>
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
-                  {new Date(item?.updated_at).toLocaleDateString("en-GB")}
+                  {new Date(item?.admission?.updated_at).toLocaleDateString(
+                    "en-GB"
+                  )}
                 </TableCell>
+
                 <TableCell className="border border-white px-4 py-1">
-                  {new Date(item?.updated_at).toLocaleDateString("en-GB")}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {new Date(item?.updated_at).toLocaleDateString("en-GB")}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.admit_card_released}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.answer_key_released}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.result_released}
-                </TableCell>
-                <TableCell className="border border-white px-4 py-1">
-                  {item?.meta_title}
+                  {item?.admission?.meta_title}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
                   {item?.Category?.name}
@@ -376,12 +318,6 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
                   >
                     <RiDeleteBin6Line size={10} />
                   </Button>
-                  <Button
-                    onClick={() => OpenHandler(item.id)}
-                    className="bg-blue-500 text-white  hover:bg-blue-600 transition duration-200 h-8 w-8"
-                  >
-                    <FiUploadCloud size={10} />
-                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -391,4 +327,4 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
   );
 };
 
-export default JobTable;
+export default CollageAdmissionTable;

@@ -7,74 +7,105 @@ import { MdModeEditOutline } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import { htmlToText } from "html-to-text";
-import ModalForm from "./job-modal-form";
 import SearchBar from "../search";
-import Link from "next/link";
-import { FiUploadCloud } from "react-icons/fi";
 
 import { GrView } from "react-icons/gr";
 
-import JobFilters from "../filters/job-filter";
 import parse from "html-react-parser";
 
-import { deleteData } from "@/utils";
+import { deleteData, initialJobFormData, putData } from "@/utils";
 import AdmitCardFilters from "../filters/admit-card-filter";
+import CommonForm from "../common-form";
+import { jobPostFormControlls } from "@/config";
 const ResultTable = ({ resultData = [], headers = [] }) => {
   const [filteredData, setFilteredData] = useState([]);
+  const [formData, setFormData] = useState(initialJobFormData);
+  const [editDailog, setEditDailog] = useState(false);
   const [dialogContent, setDialogContent] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const handleDelete = async (id) => {
     try {
-      await deleteData(`/job/${id}`);
-      router.refresh();
+      await deleteData(`/jobupdate/${id}`);
+      setFilteredData((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Failed to delete the job:", error);
     }
   };
-
+  const handleEdit = (item) => {
+    //console.log(item);
+    setEditDailog(true);
+    setFormData(item);
+  };
+  const Remove = () => {
+    setFormData(initialJobFormData);
+    setEditDailog(false);
+  };
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.id) {
+      try {
+        await putData(`/jobupdate/${formData.id}`, formData);
+        setEditDailog(false);
+        router.refresh();
+      } catch (error) {
+        console.error("Failed to update the job:", error);
+      }
+    }
+  };
   useEffect(() => {
     if (resultData && resultData.length > 0) {
       setFilteredData(resultData);
     }
   }, [resultData]);
-  // const locations = useMemo(() => {
-  //   return Array.from(
-  //     new Set(resultData?.map((job) => job.State?.name || ""))
-  //   );
-  // }, [resultData]);
+  const locations = useMemo(() => {
+    return Array.from(new Set(resultData?.map((job) => job.State?.name || "")));
+  }, [resultData]);
 
-  // const categories = useMemo(() => {
-  //   Array.from(
-  //     new Set(resultData?.map((job) => job.Category?.name || "") || [])
-  //   );
-  // }, [resultData]);
-  // const departments = useMemo(() => {
-  //   Array.from(
-  //     new Set(resultData?.map((job) => job.Depertment?.name || "") || [])
-  //   );
-  // }, [resultData]);
+  const categories = useMemo(() => {
+    return Array.from(
+      new Set(resultData?.map((job) => job.Category?.name || "") || [])
+    );
+  }, [resultData]);
+  const departments = useMemo(() => {
+    return Array.from(
+      new Set(resultData?.map((job) => job.Depertment?.name || "") || [])
+    );
+  }, [resultData]);
 
-  // const contentData = useMemo(() => {
-  //   return resultData?.map((contentItem) =>
-  //     htmlToText(contentItem.content, {
-  //       wordwrap: 130,
-  //       selectors: [{ selector: "a", options: { ignoreHref: true } }],
-  //     })
-  //   );
-  // }, [resultData]);
+  const contentData = useMemo(() => {
+    return resultData?.map((contentItem) =>
+      htmlToText(contentItem?.job?.content, {
+        wordwrap: 130,
+        selectors: [{ selector: "a", options: { ignoreHref: true } }],
+      })
+    );
+  }, [resultData]);
 
   const handleSearch = useCallback(
     (term) => {
       const searchTerms = term.split(",").map((t) => t.trim().toLowerCase());
       const filtered = resultData.filter((formData) =>
         searchTerms.some((searchTerm) =>
-          Object.values(formData).some(
-            (value) =>
+          // Check all values in the top-level object
+          Object.values(formData).some((value) => {
+            if (
               typeof value === "string" &&
               value.toLowerCase().includes(searchTerm)
-          )
+            ) {
+              return true;
+            }
+            // Check nested objects (job, Category, Department, etc.)
+            if (typeof value === "object" && value !== null) {
+              return Object.values(value).some(
+                (nestedValue) =>
+                  typeof nestedValue === "string" &&
+                  nestedValue.toLowerCase().includes(searchTerm)
+              );
+            }
+            return false;
+          })
         )
       );
       setFilteredData(filtered);
@@ -88,79 +119,65 @@ const ResultTable = ({ resultData = [], headers = [] }) => {
     setSearchTerm("");
   };
 
-  // const handleFilter = (filters) => {
-  //   const filtered = resultData.filter((job) => {
-  //     const locationMatch = job["State"]["name"]
-  //       .toLowerCase()
-  //       .includes(filters.location.toLowerCase());
+  const handleFilter = (filters) => {
+    const filtered = resultData.filter((job) => {
+      const locationMatch = job["State"]["name"]
+        .toLowerCase()
+        .includes(filters.location.toLowerCase());
 
-  //     const departmentMatch = job["Depertment"]["name"]
-  //       .toLowerCase()
-  //       .includes(filters.department.toLowerCase());
-  //     const categoryMatch = job["Category"]["name"]
-  //       .toLowerCase()
-  //       .includes(filters.category.toLowerCase());
+      const departmentMatch = job["Depertment"]["name"]
+        .toLowerCase()
+        .includes(filters.department.toLowerCase());
+      const categoryMatch = job["Category"]["name"]
+        .toLowerCase()
+        .includes(filters.category.toLowerCase());
 
-  //     const jobDate = job.created_at ? new Date(job.created_at) : null;
-  //     const dateFrom = filters.publishDate?.from
-  //       ? new Date(filters.publishDate.from)
-  //       : null;
-  //     const dateTo = filters.publishDate?.to
-  //       ? new Date(filters.publishDate.to)
-  //       : null;
+      const jobDate = job?.created_at ? new Date(job?.created_at) : null;
+      const admitCardDate = job?.job?.created_at
+        ? new Date(job?.job?.created_at)
+        : null;
 
-  //     const publishDateMatch =
-  //       jobDate && dateFrom && dateTo
-  //         ? jobDate >= dateFrom && jobDate <= dateTo
-  //         : true; // No filter selected, match all
+      const dateFrom = filters.publishDate?.from
+        ? new Date(filters.publishDate.from)
+        : null;
+      const dateTo = filters.publishDate?.to
+        ? new Date(filters.publishDate.to)
+        : null;
+      const admitCardDateFrom = filters.admitCardDate?.from
+        ? new Date(filters.admitCardDate.from)
+        : null;
+      const admitCardDateTo = filters.admitCardDate?.to
+        ? new Date(filters.admitCardDate.to)
+        : null;
 
-  //     const contentMatch = job["content"]
-  //       .toLowerCase()
-  //       .includes(filters.content.toLowerCase());
+      const publishDateMatch =
+        jobDate && dateFrom && dateTo
+          ? jobDate >= dateFrom && jobDate <= dateTo
+          : true; // No filter selected, match all
 
-  //     const salaryMatch = job["content"].match(/salary\s*=\s*(\d+)-(\d+)/);
-  //     const salaryInRange =
-  //       salaryMatch &&
-  //       filters.salary >= Number(salaryMatch[1]) &&
-  //       filters.salary <= Number(salaryMatch[2]);
+      const admitCardDateMatch =
+        admitCardDate && admitCardDateFrom && admitCardDateTo
+          ? admitCardDate >= admitCardDateFrom &&
+            admitCardDate <= admitCardDateTo
+          : true;
+      console.log({ publishDateMatch, admitCardDate });
 
-  //     // Age check
-  //     const ageMatch = job["content"].match(/age\s*=\s*(\d+)-(\d+)/);
-  //     const ageInRange =
-  //       ageMatch &&
-  //       filters.age >= Number(ageMatch[1]) &&
-  //       filters.age <= Number(ageMatch[2]);
+      const contentMatch = job["job"]["content"]
+        .toLowerCase()
+        .includes(filters.content.toLowerCase());
 
-  //     //exprience check
-  //     const exprienceMatch = job["content"].match(
-  //       /exprience\s*=\s*(\d+)-(\d+)/
-  //     );
-  //     const exprienceInRange =
-  //       exprienceMatch &&
-  //       filters.exprience >= Number(exprienceMatch[1]) &&
-  //       filters.exprience <= Number(exprienceMatch[2]);
+      return (
+        locationMatch &&
+        departmentMatch &&
+        categoryMatch &&
+        contentMatch &&
+        publishDateMatch &&
+        admitCardDateMatch
+      );
+    });
 
-  //     // If no filters for age, default to true
-  //     const ageRangeValid = filters.age ? ageInRange : true;
-  //     // If no filters for salary, default to true
-  //     const salaryRangeValid = filters.salary ? salaryInRange : true;
-  //     // If no filters for exprience, default to true
-  //     const exprienceRangeValid = filters.exprience ? exprienceInRange : true;
-  //     return (
-  //       locationMatch &&
-  //       departmentMatch &&
-  //       categoryMatch &&
-  //       contentMatch &&
-  //       publishDateMatch &&
-  //       salaryRangeValid &&
-  //       ageRangeValid &&
-  //       exprienceRangeValid
-  //     );
-  //   });
-
-  //   setFilteredData(filtered);
-  // };
-
+    setFilteredData(filtered);
+  };
   return (
     <div>
       <SearchBar
@@ -171,7 +188,15 @@ const ResultTable = ({ resultData = [], headers = [] }) => {
       <h1 className="text-2xl font-semibold text-blueish font-montserrat">
         Filters By
       </h1>
-      <AdmitCardFilters />
+      <AdmitCardFilters
+        onApplyFilter={handleFilter}
+        locations={locations}
+        categories={categories}
+        departments={departments}
+        contentData={contentData}
+        dataPlaceholder="Result..."
+        dateLabel="Publish Date of Result"
+      />
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="max-w-[90%] max-h-[80vh] overflow-y-auto">
@@ -217,7 +242,7 @@ const ResultTable = ({ resultData = [], headers = [] }) => {
           {filteredData.map((item) => (
             <TableRow
               key={item.id}
-              className="hover:bg-gray-100 transition-all duration-200 text-center"
+              className="hover:bg-gray-100 transition-all duration-200 text-center truncate"
             >
               <TableCell className="border border-white px-4 py-1">
                 {item?.id}
@@ -266,14 +291,31 @@ const ResultTable = ({ resultData = [], headers = [] }) => {
               </TableCell>
               <TableCell className="flex justify-end gap-2 border border-white px-4 py-1">
                 <Button
-                  //onClick={() => edit(formData)}
+                  onClick={() => handleEdit(item)}
                   className="bg-blue-500 text-white hover:bg-blue-600 transition duration-150 h-8 w-8"
                 >
                   <MdModeEditOutline />
                 </Button>
+                {/* Dialog for Form */}
+                <Dialog open={editDailog} onOpenChange={Remove}>
+                  <DialogContent className="max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-lg w-full max-w-3xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold text-gray-800">
+                        Update Job Post
+                      </DialogTitle>
+                    </DialogHeader>
+                    <CommonForm
+                      formControlls={jobPostFormControlls}
+                      formData={formData}
+                      setFormData={setFormData}
+                      buttonText={"Update"}
+                      handleSubmit={handleEditSubmit}
+                    />
+                  </DialogContent>
+                </Dialog>
                 <Button
                   variant="destructive"
-                  // onClick={() => deleteFormData(formData.id)}
+                  onClick={() => handleDelete(item.id)}
                   className="bg-red-500 text-white hover:bg-red-600 transition duration-150 h-8 w-8"
                 >
                   <RiDeleteBin6Line />

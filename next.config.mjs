@@ -1,7 +1,7 @@
+// next.config.mjs
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  productionBrowserSourceMaps: false, // Disable SourceMap generation
+};
 
 export default nextConfig;
-module.exports = {
-  productionBrowserSourceMaps: false, // disable SourceMap generation
-};

@@ -13,7 +13,7 @@ const defalutInitialValue = {
   publishDate: "",
 };
 
-const AdmitCardFilters = ({
+const AdmissionFilters = ({
   onApplyFilter,
   locations = [],
   categories = [],
@@ -114,22 +114,29 @@ const AdmitCardFilters = ({
           onSearch={(value) => handleSearch("content", value)}
           clearSuggestions={() => setContentSuggestions([])}
           clear={filters.content === ""}
-          placeholder={dataPlaceholder}
+          placeholder="Education Level..."
+        />
+        <SearchFilter
+          value={filters?.content}
+          suggestions={contentSuggestions}
+          onSearch={(value) => handleSearch("content", value)}
+          clearSuggestions={() => setContentSuggestions([])}
+          clear={filters.content === ""}
+          placeholder="Current Course..."
+        />
+        <SearchFilter
+          value={filters?.content}
+          suggestions={contentSuggestions}
+          onSearch={(value) => handleSearch("content", value)}
+          clearSuggestions={() => setContentSuggestions([])}
+          clear={filters.content === ""}
+          placeholder="Class..."
         />
 
         <div className="flex flex-col border border-gray-200 hover:border-secondary rounded-xl">
           <Label className=" text-gray-700 mb-2 text-center">
-            Publish Date of Job Posting
+            Publish Date of Admissin
           </Label>
-          <DatePickerWithRange
-            onDateRangeChange={(selectedRange) =>
-              handleInputChange("publishDate", selectedRange)
-            }
-            resetDate={resetDate}
-          />
-        </div>
-        <div className="flex flex-col border border-gray-200 hover:border-secondary rounded-xl">
-          <Label className=" text-gray-700 mb-2 text-center">{dateLabel}</Label>
           <DatePickerWithRange
             onDateRangeChange={(selectedRange) =>
               handleInputChange("publishDate", selectedRange)
@@ -156,4 +163,4 @@ const AdmitCardFilters = ({
   );
 };
 
-export default AdmitCardFilters;
+export default AdmissionFilters;

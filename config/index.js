@@ -49,6 +49,108 @@ export const jobPostFormControlls = [
     componentType: "input",
   },
   {
+    label: "Admit Card Realeased",
+    name: "admit_card_released",
+    componentType: "select",
+    options: [
+      { value: "yes", label: "Yes" },
+      { value: "no", label: "No" },
+    ],
+  },
+  {
+    label: "Answer Key Realeased",
+    name: "answer_key_released",
+    componentType: "select",
+    options: [
+      { value: "yes", label: "Yes" },
+      { value: "no", label: "No" },
+    ],
+  },
+  {
+    label: "Result Realeased",
+    name: "result_released",
+    componentType: "select",
+    options: [
+      { value: "yes", label: "Yes" },
+      { value: "no", label: "No" },
+    ],
+  },
+  {
+    label: "Category",
+    name: "category_id",
+    componentType: "select",
+    apiEndpoint: `${apiurl}/category`, // Replace with your API endpoint
+  },
+  {
+    label: "Sub Category",
+    name: "subcategory_id",
+    componentType: "select",
+    apiEndpoint: `${apiurl}/subcategory`,
+  },
+  {
+    label: "State",
+    name: "state_id",
+    componentType: "select",
+    apiEndpoint: `${apiurl}/state`,
+  },
+  {
+    label: "Department",
+    name: "department_id",
+    componentType: "select",
+    apiEndpoint: `${apiurl}/depertment`,
+  },
+];
+
+export const admissionPostFormControlls = [
+  {
+    label: "Title",
+    name: "title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Date",
+    name: "date",
+    type: "date",
+    componentType: "input",
+  },
+  {
+    name: "content",
+    label: "Content",
+    componentType: "jodit-editor",
+  },
+  {
+    label: "Short Information",
+    name: "description",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Slug",
+    name: "slug",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Meta Tags",
+    name: "meta_title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Meta Description",
+    name: "meta_description",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Canonical URL",
+    name: "canonical_url",
+    type: "text",
+    componentType: "input",
+  },
+
+  {
     label: "Category",
     name: "category_id",
     componentType: "select",
@@ -129,8 +231,8 @@ export const subCategoryHeaderControlls = [
 ];
 
 export const departmentHeaderControlls = [
-  "Category ID",
-  "Category Name",
+  "Department ID",
+  "Department Name",
   "Actions",
 ];
 export const stateHeaderControlls = ["State ID", "State Name", "Actions"];
@@ -195,6 +297,70 @@ export const resultHeaderControlls = [
   "Content",
   "Date of Result",
   "Result",
+  "SEO",
+  "Category",
+  "SubCategory",
+  "State",
+  "Department",
+  "Actions",
+];
+
+export const admissionPostHeaderControlls = [
+  "Admission ID",
+  "Title",
+  "Date of  admissionPosting",
+  "Description",
+  "Content",
+  "Date of school Admission",
+  "Date of collage Admission",
+  "University Date",
+
+  "SEO",
+  "Category",
+  "SubCategory",
+  "State",
+  "Department",
+  "Actions",
+];
+
+export const schoolAdmissionPostHeaderControlls = [
+  "Admission ID",
+  "Title",
+  "Date of  admissionPosting",
+  "Description",
+  "Content",
+  "Date of School Admission",
+
+  "SEO",
+  "Category",
+  "SubCategory",
+  "State",
+  "Department",
+  "Actions",
+];
+
+export const collageAdmissionPostHeaderControlls = [
+  "Admission ID",
+  "Title",
+  "Date of  admissionPosting",
+  "Description",
+  "Content",
+  "Date of Collage Admission",
+
+  "SEO",
+  "Category",
+  "SubCategory",
+  "State",
+  "Department",
+  "Actions",
+];
+export const universityAdmissionPostHeaderControlls = [
+  "Admission ID",
+  "Title",
+  "Date of  admissionPosting",
+  "Description",
+  "Content",
+  "University Date",
   "SEO",
   "Category",
   "SubCategory",
