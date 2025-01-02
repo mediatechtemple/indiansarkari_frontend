@@ -153,7 +153,7 @@ export const putData = async (endpoint, data) => {
 
 export const getData = async (endpoint) => {
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    const response = await fetch(`${apiurl}${endpoint}`{
       method: "GET",
       headers: {
         "Cache-Control": "no-store", // Disable caching
