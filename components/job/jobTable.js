@@ -17,11 +17,12 @@ import { GrView } from "react-icons/gr";
 import JobFilters from "../filters/job-filter";
 import parse from "html-react-parser";
 
-import { deleteData, initialJobFormData, putData } from "@/utils";
+import { deleteData, getData, initialJobFormData, putData } from "@/utils";
 import { jobPostFormControlls } from "@/config";
 import CommonForm from "../common-form";
-const JobTable = ({ jobFormData = [], headers = [] }) => {
+const JobTable = ({ headers = [] }) => {
   const [showModel, setShowModel] = useState(false);
+  const [jobFormData, setJobFormData] = useState([]);
   const [editDailog, setEditDailog] = useState(false);
   const [formData, setFormData] = useState(initialJobFormData);
   const [jobID, setJobID] = useState(null);
@@ -30,6 +31,13 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  useEffect(() => {
+    (async () => {
+      const res = await getData("/job");
+      setJobFormData(res.rows);
+    })();
+  }, []);
+  console.log(jobFormData);
   const handleDelete = async (id) => {
     try {
       await deleteData(`/job/${id}`);
