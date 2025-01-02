@@ -2,33 +2,35 @@
 import React, { useState } from "react";
 import CommonForm from "@/components/common-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { jobPostFormControlls } from "@/config";
-import { initialJobFormData, postData } from "@/utils";
+import { initialGenralKnowledgeFormData, postData } from "@/utils";
 import { RiCloseLine } from "@remixicon/react";
 import { useRouter } from "next/navigation";
 import Loading from "@/app/loading";
+import { genralKnowledgePostFormControlls } from "@/config";
 
-const AddJobPost = () => {
-  const [jobFormData, setJobFormData] = useState(initialJobFormData);
+const AddGenralKnowledgePost = () => {
+  const [FormData, setFormData] = useState(initialGenralKnowledgeFormData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(""); // State for error messages
   const router = useRouter();
 
-  const handleJobFormSubmit = async (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     setLoading(true);
     setError(""); // Reset error message before submitting
 
     try {
-      const data = await postData(`/job`, jobFormData);
+      const data = await postData(`/generalknow`, FormData);
       if (data) {
-        setJobFormData(initialJobFormData);
+        setFormData(initialGenralKnowledgeFormData);
 
-        router.push("/job/job-post");
+        //router.push("/study/books");
         setLoading(false);
       } else {
-        throw new Error("Job post creation failed. Please try again.");
+        throw new Error(
+          "Genral Knowledge post creation failed. Please try again."
+        );
       }
     } catch (err) {
       setLoading(false);
@@ -37,12 +39,12 @@ const AddJobPost = () => {
   };
 
   const checkIfFormIsValid = () => {
-    return jobFormData.title;
+    return FormData.title;
   };
 
-  // if (loading) {
-  //   return <Loading />;
-  // }
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -50,10 +52,10 @@ const AddJobPost = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-2xl text-lightBlue font-montserrat">
-              Create Job Post
+              Create Genral Knowledge Post
             </CardTitle>
             <RiCloseLine
-              onClick={() => router.back("/job/job-post")}
+              onClick={() => router.back("/study/add-genral-knowledge")}
               className="w-6 h-6 cursor-pointer font-bold"
             />
           </div>
@@ -62,12 +64,12 @@ const AddJobPost = () => {
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}{" "}
           {/* Display error */}
           <CommonForm
-            formControlls={jobPostFormControlls}
+            formControlls={genralKnowledgePostFormControlls}
             buttonText={loading ? "Submitting..." : "Submit"}
-            formData={jobFormData}
-            setFormData={setJobFormData}
+            formData={FormData}
+            setFormData={setFormData}
             isButtonDisabled={!checkIfFormIsValid()}
-            handleSubmit={handleJobFormSubmit}
+            handleSubmit={handleFormSubmit}
           />
         </CardContent>
       </Card>
@@ -75,4 +77,4 @@ const AddJobPost = () => {
   );
 };
 
-export default AddJobPost;
+export default AddGenralKnowledgePost;

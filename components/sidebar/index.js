@@ -64,8 +64,8 @@ const Sidebar = () => {
     ));
 
   return (
-    <div className="bg-primary w-full pb-10">
-      <div className="p-5">
+    <div className="bg-primary w-full h-lvh mt-20">
+      <div className="py-2">
         <SideBarOptions optionsName="Dashboard" Icon={RiHome2Line} />
         <SideBarOptions optionsName="User Management" Icon={RiUserLine} />
         <SideBarOptions optionsName="Student Management" Icon={RiTeamLine} />

@@ -4,13 +4,12 @@ import AsyncSelect from "react-select/async";
 
 import dynamic from "next/dynamic"; // Ensure this import is present
 
-import { Textarea } from "../ui/textarea";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const FormControll = ({ formControls = [], formData, setFormData }) => {
-  // const editor = useRef(null);
+  const editor = useRef(null);
   const [optionsData, setOptionsData] = useState({}); // State to store fetched options for all fields
   useEffect(() => {
     const fetchAllOptions = async () => {
@@ -114,15 +113,94 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
         );
 
       case "jodit-editor":
+        const config = {
+          readonly: false, // Enable editing
+          height: 400,
+          width: "100%",
+          toolbar: true,
+          toolbarSticky: true,
+          buttons: [
+            "source",
+            "bold",
+            "italic",
+            "underline",
+            "strikethrough",
+            "eraser",
+            "superscript",
+            "subscript",
+            "|",
+            "ul",
+            "ol",
+            "indent",
+            "outdent",
+            "|",
+            "font",
+            "fontsize",
+            "brush",
+            "paragraph",
+            "|",
+            "image",
+            "video",
+            "file",
+            "table",
+            "link",
+            "|",
+            "align",
+            "undo",
+            "redo",
+            "|",
+            "hr",
+            "copyformat",
+            "fullsize",
+            "preview",
+            "print",
+            "|",
+            "selectall",
+            "cut",
+            "copy",
+            "paste", // Explicit paste button
+            "|",
+            "symbol",
+            "embed",
+            "dots",
+          ],
+          uploader: {
+            insertImageAsBase64URI: true, // Allows image upload as Base64
+          },
+          placeholder: "Start typing or paste content here...",
+          events: {
+            paste: (e) => {
+              const clipboardData = e.clipboardData || window.clipboardData;
+
+              // Get the HTML content from clipboard if available
+              const pastedHtml = clipboardData.getData("text/html");
+              const pastedText = clipboardData.getData("text/plain");
+
+              if (pastedHtml) {
+                // If HTML is available, insert the HTML content into the editor
+                editor.current.selection.insertHTML(pastedHtml);
+              } else if (pastedText) {
+                // If only plain text is available, insert the plain text
+                editor.current.selection.insertText(pastedText);
+              }
+
+              // Prevent the default paste action so we can manage it ourselves
+              e.preventDefault();
+            },
+          },
+        };
+
         return (
           <JoditEditor
-            // ref={editor}
+            ref={editor}
             value={formData[controlItem.name] || ""}
-            onChange={(newContent) =>
-              setFormData({
-                ...formData,
+            config={config}
+            onChange={(newContent) => {}}
+            onBlur={(newContent) =>
+              setFormData((prevData) => ({
+                ...prevData,
                 [controlItem.name]: newContent,
-              })
+              }))
             }
           />
         );
@@ -181,15 +259,33 @@ const FormControll = ({ formControls = [], formData, setFormData }) => {
 
       case "textarea":
         return (
-          <Textarea
+          <textarea
             id={controlItem.name}
             name={controlItem.name}
-            placeholder={controlItem.placeholder || "Enter text here..."}
+            className="mt-1 block outline-none w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
+            placeholder={controlItem.placeholder}
             value={currentControlItemValue}
             onChange={(event) =>
               setFormData({
                 ...formData,
                 [controlItem.name]: event.target.value,
+              })
+            }
+          />
+        );
+
+      case "file-upload":
+        return (
+          <input
+            type="file"
+            id={controlItem.name}
+            name={controlItem.name}
+            accept={controlItem.accept || "*"}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [controlItem.name]: event.target.files[0], // Store the uploaded file in formData
               })
             }
           />

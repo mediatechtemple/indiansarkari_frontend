@@ -3,7 +3,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="w-full text-center bg-[#409CBC] py-4  bottom-0 z-50">
+    <div className="w-[82%] float-right text-center bg-[#409CBC] py-4  bottom-0 z-40">
       <h5 className="text-white text-[16px] font-normal">
         <RiCopyrightLine className="inline-block mr-1" size={17} />
         All Rights Reserved to{" "}

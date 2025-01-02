@@ -16,12 +16,11 @@ export const AdmissionManagementItems = [
 ];
 
 export const studyMetarialManagementItems = [
-  { label: "General Knowledge", path: "/genral-knowledge" },
-  { label: "Video Class Management", path: "/video-class" },
-  { label: "Books Management", path: "/books" },
-
-  { label: "Notes Management", path: "/notes" },
-  { label: "Old Papers Management", path: "/old-paper" },
+  { label: "General Knowledge", path: "/study/genral-knowledge" },
+  { label: "Video Class Management", path: "/study/video-class" },
+  { label: "Books Management", path: "/study/books" },
+  { label: "Notes Management", path: "/study/notes" },
+  { label: "Old Papers Management", path: "/study/old-paper" },
 ];
 export const websiteManagementsItems = [
   { label: "Support Management", path: "/support" },
@@ -33,6 +32,7 @@ export const initialJobFormData = {
   created_at: "",
   description: "",
   content: "",
+  jobUrl: "",
   slug: "",
   meta_title: "",
   meta_description: "",
@@ -44,6 +44,64 @@ export const initialJobFormData = {
   admit_card_released: "no",
   answer_key_released: "no",
   result_released: "no",
+};
+export const initialbookFormData = {
+  title: "",
+  description: "",
+  uploadType: "BooksManagement",
+  courseType: "",
+  accessType: "",
+  metaTags: "",
+  metaDescription: "",
+  canonicalUrl: "",
+  fileUrl: "",
+  file: null,
+};
+export const initialGenralKnowledgeFormData = {
+  title: "",
+  content: "",
+  slug: "",
+  meta_title: "",
+  meta_description: "",
+  canonical_url: "",
+  og_image: "",
+  is_paid: "free",
+};
+export const initialNotesFormData = {
+  title: "",
+  description: "",
+  uploadType: "NotesManagement",
+  courseType: "",
+  accessType: "",
+  metaTags: "",
+  metaDescription: "",
+  canonicalUrl: "",
+  fileUrl: "",
+  file: null,
+};
+export const initialOldPaperFormData = {
+  title: "",
+  description: "",
+  uploadType: "OldPapersManagement",
+  courseType: "",
+  accessType: "",
+  metaTags: "",
+  metaDescription: "",
+  canonicalUrl: "",
+  fileUrl: "",
+  file: null,
+};
+export const initialViodeFormData = {
+  title: "",
+  description: "",
+  uploadType: "VideoClasses",
+  courseType: "",
+  accessType: "",
+  metaTags: "",
+  metaDescription: "",
+  canonicalUrl: "",
+  fileUrl: "",
+  file: null,
 };
 
 // utils/index.js
@@ -99,6 +157,34 @@ export const getData = async (endpoint) => {
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.statusText}`);
     }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+export const formPostData = async (endpoint, data) => {
+  try {
+    const response = await fetch(`${apiurl}${endpoint}`, {
+      method: "POST",
+      headers:
+        endpoint === "/category"
+          ? undefined
+          : { "Content-Type": "application/json" },
+      body:
+        endpoint === "/category"
+          ? data
+          : JSON.stringify(Object.fromEntries(data.entries())),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to submit: ${response.status} ${response.statusText}, Details: ${errorText}`
+      );
+    }
+
     return await response.json();
   } catch (error) {
     console.error("API Error:", error);

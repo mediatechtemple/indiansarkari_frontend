@@ -20,7 +20,7 @@ import {
 } from "@/config";
 import SearchBar from "@/components/search";
 import JobinputCommonTable from "@/components/job/jobInputTable";
-import { deleteData, getData, postData, putData } from "@/utils";
+import { deleteData, formPostData, getData, putData } from "@/utils";
 
 const formConfigs = {
   category: { controls: categoryFormControls, endpoint: "/category" },
@@ -77,11 +77,41 @@ const JobInput = () => {
     }
 
     const { endpoint } = formConfigs[formType];
-
     setLoading(true); // Start loading
+
     try {
+      const formDataToSend = new FormData();
+      console.log("Form Data:", formData);
+
+      // Add all the form fields to FormData
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key];
+
+        // Skip undefined or null values
+        if (value !== undefined && value !== null) {
+          if (key === "file" && value) {
+            // Append file separately if it's an image
+            console.log(`Appending file: ${key}`, value);
+            formDataToSend.append(key, value);
+          } else {
+            // Append other regular fields
+            console.log(`Appending field: ${key}`, value);
+            formDataToSend.append(key, value);
+          }
+        } else {
+          console.warn(`Skipping empty key: ${key}`);
+        }
+      });
+
+      console.log("FormData to send:", [...formDataToSend.entries()]);
+
+      // Now send FormData
       if (formData.id) {
-        const result = await putData(`${endpoint}/${formData.id}`, formData);
+        const result = await putData(
+          `${endpoint}/${formData.id}`,
+          formDataToSend,
+          true
+        ); // true for FormData
         const updatedItem = result;
         switch (formType) {
           case "category":
@@ -116,7 +146,8 @@ const JobInput = () => {
             break;
         }
       } else {
-        const result = await postData(endpoint, formData);
+        const result = await formPostData(endpoint, formDataToSend); // true for FormData
+
         const newItem = result;
         switch (formType) {
           case "category":

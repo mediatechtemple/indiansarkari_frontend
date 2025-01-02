@@ -238,7 +238,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
         jobId={jobID}
       />
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="max-w-[90%] max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-[100%] max-h-[100vh] overflow-y-auto">
           <DialogHeader className="flex justify-between">
             <DialogTitle>Content Preview</DialogTitle>
             <input
@@ -291,13 +291,13 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
                 <TableCell className="border border-white px-4 py-1">
                   {item?.id}
                 </TableCell>
-                <TableCell className="border border-white px-4 py-1">
+                <TableCell className="border border-white px-4 py-1 truncate max-w-[200px]">
                   {item?.title}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
                   {new Date(item?.created_at).toLocaleDateString("en-GB")}
                 </TableCell>
-                <TableCell className="border border-white px-4 py-1">
+                <TableCell className="border border-white px-4 py-1 truncate max-w-[200px]">
                   {item?.description}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
@@ -309,6 +309,9 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
                   >
                     <GrView size={30} className="text-center text-gray-400" />
                   </a>
+                </TableCell>
+                <TableCell className="border border-white px-4 py-1 truncate max-w-[200px]">
+                  {item?.jobUrl}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
                   {new Date(item?.updated_at).toLocaleDateString("en-GB")}
@@ -328,7 +331,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
                 <TableCell className="border border-white px-4 py-1">
                   {item?.result_released}
                 </TableCell>
-                <TableCell className="border border-white px-4 py-1">
+                <TableCell className="border border-white px-4 py-1 truncate max-w-[200px]">
                   {item?.meta_title}
                 </TableCell>
                 <TableCell className="border border-white px-4 py-1">
@@ -353,7 +356,10 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
                   </Button>
                   {/* Dialog for Form */}
                   <Dialog open={editDailog} onOpenChange={Remove}>
-                    <DialogContent className="max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-lg w-full max-w-3xl">
+                    <DialogContent
+                      style={{ zIndex: 1000 }}
+                      className=" max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-lg w-full max-w-7xl"
+                    >
                       <DialogHeader>
                         <DialogTitle className="text-xl font-bold text-gray-800">
                           Update Job Post

@@ -4,14 +4,24 @@ import React, { useState } from "react";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { apiurl } from "@/utils";
+import { Input } from "../ui/input";
 
 const ModalForm = ({ showModal, setShowModal, jobId }) => {
   const [formData, setFormData] = useState({
     update_type: "",
     job_id: "",
+    admitCardUrl: "",
+    answerKeyUrl: "",
+    resultUrl: "",
+    otherUrl: "",
   });
   const [loading, setLoading] = useState(false);
-
+  const inputNameMap = {
+    admit_card: "admitCardUrl",
+    answer_key: "answerKeyUrl",
+    result: "resultUrl",
+    other: "otherUrl",
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -32,6 +42,10 @@ const ModalForm = ({ showModal, setShowModal, jobId }) => {
       setFormData({
         update_type: "",
         job_id: "",
+        admitCardUrl: "",
+        answerKeyUrl: "",
+        resultUrl: "",
+        otherUrl: "",
       });
     } catch (error) {
       console.log(error);
@@ -46,6 +60,10 @@ const ModalForm = ({ showModal, setShowModal, jobId }) => {
     setFormData({
       update_type: "",
       job_id: "",
+      admitCardUrl: "",
+      answerKeyUrl: "",
+      resultUrl: "",
+      otherUrl: "",
     });
   };
 
@@ -96,6 +114,27 @@ const ModalForm = ({ showModal, setShowModal, jobId }) => {
                   </option>
                 </select>
               </div>
+              {formData.update_type && (
+                <div>
+                  <Label className="text-base font-medium">
+                    {formData.update_type.replace("_", " ").toUpperCase()} URL{" "}
+                    <span className="text-red-500">*</span>
+                  </Label>
+
+                  <Input
+                    type="text"
+                    name={inputNameMap[formData.update_type]}
+                    placeholder={`Enter ${formData.update_type.replace(
+                      "_",
+                      " "
+                    )} URL`}
+                    value={formData.url}
+                    onChange={handleInputChange}
+                    required
+                    className="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-lg font-semibold"
+                  />
+                </div>
+              )}
 
               <Button
                 type="submit"

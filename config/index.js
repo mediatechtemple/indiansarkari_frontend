@@ -19,6 +19,12 @@ export const jobPostFormControlls = [
     componentType: "jodit-editor",
   },
   {
+    label: "Job URL",
+    name: "jobUrl",
+    type: "text",
+    componentType: "input",
+  },
+  {
     label: "Short Information",
     name: "description",
     type: "text",
@@ -176,6 +182,312 @@ export const admissionPostFormControlls = [
   },
 ];
 
+export const bookPostFormControlls = [
+  {
+    label: "Title",
+    name: "title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Description",
+    name: "description",
+    type: "text",
+    componentType: "textarea",
+  },
+  {
+    label: "Course Type",
+    name: "courseType",
+    componentType: "select",
+    options: [
+      { value: "course", label: "Course" },
+      { value: "standalone", label: "Standalone" },
+    ],
+  },
+  {
+    label: "Access Type",
+    name: "accessType",
+    componentType: "select",
+    options: [
+      { value: "free", label: "Free" },
+      { value: "paid", label: "Paid" },
+    ],
+  },
+  {
+    label: "File URL",
+    name: "fileUrl",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Upload File",
+    name: "file",
+    type: "file",
+    componentType: "file-upload",
+  },
+  {
+    label: "Meta Tags",
+    name: "metaTags",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Meta Description",
+    name: "metaDescription",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Canonical URL",
+    name: "canonicalUrl",
+    type: "text",
+    componentType: "input",
+  },
+];
+
+export const genralKnowledgePostFormControlls = [
+  {
+    label: "Title",
+    name: "title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Content",
+    name: "content",
+    type: "text",
+    componentType: "textarea",
+  },
+  {
+    label: "Slug",
+    name: "slug",
+    type: "text",
+    componentType: "input",
+  },
+
+  {
+    label: "Meta Tags",
+    name: " meta_title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Meta Description",
+    name: "meta_description",
+    type: "text",
+    componentType: "textarea",
+  },
+  {
+    label: "Canonical URL",
+    name: "canonical_url",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "OG Image URL",
+    name: "og_image",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Access Type",
+    name: "accessType",
+    componentType: "select",
+    options: [
+      { value: "free", label: "Free" },
+      { value: "paid", label: "Paid" },
+    ],
+  },
+];
+export const videoPostFormControlls = [
+  {
+    label: "Title",
+    name: "title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Description",
+    name: "description",
+    type: "text",
+    componentType: "textarea",
+  },
+  {
+    label: "Course Type",
+    name: "courseType",
+    componentType: "select",
+    options: [
+      { value: "course", label: "Course" },
+      { value: "standalone", label: "Standalone" },
+    ],
+  },
+  {
+    label: "Access Type",
+    name: "accessType",
+    componentType: "select",
+    options: [
+      { value: "free", label: "Free" },
+      { value: "paid", label: "Paid" },
+    ],
+  },
+  {
+    label: "File URL",
+    name: "fileUrl",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Upload File",
+    name: "file",
+    type: "file",
+    componentType: "file-upload",
+  },
+  {
+    label: "Meta Tags",
+    name: "metaTags",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Meta Description",
+    name: "metaDescription",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Canonical URL",
+    name: "canonicalUrl",
+    type: "text",
+    componentType: "input",
+  },
+];
+
+export const oldPaperPostFormControlls = [
+  {
+    label: "Title",
+    name: "title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Description",
+    name: "description",
+    type: "text",
+    componentType: "textarea",
+  },
+  {
+    label: "Course Type",
+    name: "courseType",
+    componentType: "select",
+    options: [
+      { value: "course", label: "Course" },
+      { value: "standalone", label: "Standalone" },
+    ],
+  },
+  {
+    label: "Access Type",
+    name: "accessType",
+    componentType: "select",
+    options: [
+      { value: "free", label: "Free" },
+      { value: "paid", label: "Paid" },
+    ],
+  },
+  {
+    label: "File URL",
+    name: "fileUrl",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Upload File",
+    name: "file",
+    type: "file",
+    componentType: "file-upload",
+  },
+  {
+    label: "Meta Tags",
+    name: "metaTags",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Meta Description",
+    name: "metaDescription",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Canonical URL",
+    name: "canonicalUrl",
+    type: "text",
+    componentType: "input",
+  },
+];
+
+export const notesPostFormControlls = [
+  {
+    label: "Title",
+    name: "title",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Description",
+    name: "description",
+    type: "text",
+    componentType: "textarea",
+  },
+  {
+    label: "Course Type",
+    name: "courseType",
+    componentType: "select",
+    options: [
+      { value: "course", label: "Course" },
+      { value: "standalone", label: "Standalone" },
+    ],
+  },
+  {
+    label: "Access Type",
+    name: "accessType",
+    componentType: "select",
+    options: [
+      { value: "free", label: "Free" },
+      { value: "paid", label: "Paid" },
+    ],
+  },
+  {
+    label: "File URL",
+    name: "fileUrl",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Upload File",
+    name: "file",
+    type: "file",
+    componentType: "file-upload",
+  },
+  {
+    label: "Meta Tags",
+    name: "metaTags",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Meta Description",
+    name: "metaDescription",
+    type: "text",
+    componentType: "input",
+  },
+  {
+    label: "Canonical URL",
+    name: "canonicalUrl",
+    type: "text",
+    componentType: "input",
+  },
+];
+
 export const subCategoryFormControls = [
   {
     label: "SubCategory Name",
@@ -197,6 +509,13 @@ export const categoryFormControls = [
     name: "name",
     type: "text",
     componentType: "input",
+  },
+  {
+    label: "Category Image",
+    name: "file",
+    type: "file",
+    componentType: "file-upload",
+    accept: "image/*",
   },
 ];
 
@@ -243,6 +562,7 @@ export const jobPostHeaderControlls = [
   "Date of  JobPosting",
   "Description",
   "Content",
+  "Job URL",
   "Date of AdmiCard",
   "Date of AnswerKey",
   "Date of Result",
