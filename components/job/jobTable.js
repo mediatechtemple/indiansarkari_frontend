@@ -94,7 +94,7 @@ const JobTable = ({ jobFormData = [], headers = [] }) => {
         selectors: [{ selector: "a", options: { ignoreHref: true } }],
       })
     );
-  }, [jobFormData]);
+  }, []);
 
   const handleSearch = useCallback(
     (term) => {

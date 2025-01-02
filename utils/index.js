@@ -153,12 +153,7 @@ export const putData = async (endpoint, data) => {
 
 export const getData = async (endpoint) => {
   try {
-    const response = await fetch(`${apiurl}${endpoint}`{
-      method: "GET",
-      headers: {
-        "Cache-Control": "no-store", // Disable caching
-      },
-    });
+    const response = await fetch(`${apiurl}${endpoint}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.statusText}`);
     }
@@ -173,6 +168,33 @@ export const formPostData = async (endpoint, data) => {
   try {
     const response = await fetch(`${apiurl}${endpoint}`, {
       method: "POST",
+      headers:
+        endpoint === "/category"
+          ? undefined
+          : { "Content-Type": "application/json" },
+      body:
+        endpoint === "/category"
+          ? data
+          : JSON.stringify(Object.fromEntries(data.entries())),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to submit: ${response.status} ${response.statusText}, Details: ${errorText}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+export const formPutData = async (endpoint, data) => {
+  try {
+    const response = await fetch(`${apiurl}${endpoint}`, {
+      method: "PUT",
       headers:
         endpoint === "/category"
           ? undefined

@@ -20,7 +20,7 @@ import {
 } from "@/config";
 import SearchBar from "@/components/search";
 import JobinputCommonTable from "@/components/job/jobInputTable";
-import { deleteData, formPostData, getData, putData } from "@/utils";
+import { deleteData, formPostData, formPutData, getData } from "@/utils";
 
 const formConfigs = {
   category: { controls: categoryFormControls, endpoint: "/category" },
@@ -81,7 +81,6 @@ const JobInput = () => {
 
     try {
       const formDataToSend = new FormData();
-      console.log("Form Data:", formData);
 
       // Add all the form fields to FormData
       Object.keys(formData).forEach((key) => {
@@ -91,7 +90,7 @@ const JobInput = () => {
         if (value !== undefined && value !== null) {
           if (key === "file" && value) {
             // Append file separately if it's an image
-            console.log(`Appending file: ${key}`, value);
+
             formDataToSend.append(key, value);
           } else {
             // Append other regular fields
@@ -107,7 +106,7 @@ const JobInput = () => {
 
       // Now send FormData
       if (formData.id) {
-        const result = await putData(
+        const result = await formPutData(
           `${endpoint}/${formData.id}`,
           formDataToSend,
           true

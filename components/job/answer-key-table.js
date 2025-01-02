@@ -251,13 +251,13 @@ const AnswerKeyTable = ({ answerKeyData = [], headers = [] }) => {
               <TableCell className="border border-white px-4 py-1">
                 {item?.id}
               </TableCell>
-              <TableCell className="border border-white px-4 py-1">
+              <TableCell className="border border-white px-4 py-1 truncate max-w-[200px]">
                 {item?.job?.title}
               </TableCell>
               <TableCell className="border border-white px-4 py-1">
                 {new Date(item?.created_at).toLocaleDateString("en-GB")}
               </TableCell>
-              <TableCell className="border border-white px-4 py-1">
+              <TableCell className="border border-white px-4 py-1 truncate max-w-[200px]">
                 {item?.job?.description}
               </TableCell>
               <TableCell className="border border-white px-4 py-1">
@@ -274,9 +274,9 @@ const AnswerKeyTable = ({ answerKeyData = [], headers = [] }) => {
                 {new Date(item?.job?.created_at).toLocaleDateString("en-GB")}
               </TableCell>
               <TableCell className="border border-white px-4 py-1">
-                {item?.job?.admitcard}
+                {item?.job?.answer_key_released}
               </TableCell>
-              <TableCell className="border border-white px-4 py-1">
+              <TableCell className="border border-white px-4 py-1 truncate max-w-[200px]">
                 {item?.job?.meta_title}
               </TableCell>
 
@@ -293,13 +293,13 @@ const AnswerKeyTable = ({ answerKeyData = [], headers = [] }) => {
                 {" "}
                 {item?.Depertment?.name}
               </TableCell>
-              <TableCell className="flex justify-end gap-2 border border-white px-4 py-1">
-                <Button
+              <TableCell className="flex justify-center gap-2 border border-white px-4 py-1">
+                {/* <Button
                   onClick={() => handleEdit(item)}
                   className="bg-blue-500 text-white hover:bg-blue-600 transition duration-150 h-8 w-8"
                 >
                   <MdModeEditOutline />
-                </Button>
+                </Button> */}
                 {/* Dialog for Form */}
                 <Dialog open={editDailog} onOpenChange={Remove}>
                   <DialogContent className="max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-lg w-full max-w-3xl">
