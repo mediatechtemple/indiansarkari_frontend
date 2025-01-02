@@ -153,7 +153,12 @@ export const putData = async (endpoint, data) => {
 
 export const getData = async (endpoint) => {
   try {
-    const response = await fetch(`${apiurl}${endpoint}`);
+    const response = await fetch(`${apiurl}${endpoint}`, {
+      method: "GET",
+      headers: {
+        "Cache-Control": "no-cache",
+      },
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.statusText}`);
     }
